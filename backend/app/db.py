@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from neo4j import GraphDatabase
+from neo4j import GraphDatabase, Query, READ_ACCESS
 
 from .config import settings
 from .graph_schema import NODE_KEYS
@@ -30,28 +30,60 @@ def verify_connectivity() -> None:
 
 
 def _query_name(query: str) -> str:
-    compact = " ".join(query.split())
-    return compact[:100]
+    return " ".join(query.split())[:130]
 
 
 def read(query: str, params: dict[str, Any] | None = None) -> list[dict[str, Any]]:
     parameters = params or {}
     try:
-        with driver.session() as session:
+        with driver.session(default_access_mode=READ_ACCESS) as session:
             rows = [record.data() for record in session.run(query, parameters)]
+        logger.info("neo4j.query_ok query=%r params=%r rows=%d", _query_name(query), parameters, len(rows))
+        return rows
+    except Exception:
+        logger.exception("neo4j.query_failed query=%r params=%r", _query_name(query), parameters)
+        raise
+
+
+def read_with_timeout(
+    query: str,
+    params: dict[str, Any] | None = None,
+    *,
+    timeout_seconds: float,
+    metadata: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    parameters = params or {}
+    configured_query = Query(query, timeout=timeout_seconds, metadata=metadata or {})
+    try:
+        with driver.session(default_access_mode=READ_ACCESS) as session:
+            rows = [record.data() for record in session.run(configured_query, parameters)]
         logger.info(
-            "neo4j.query_ok query=%r params=%r rows=%d",
+            "neo4j.generated_query_ok query=%r rows=%d timeout_seconds=%.1f",
             _query_name(query),
-            parameters,
             len(rows),
+            timeout_seconds,
         )
         return rows
     except Exception:
-        logger.exception(
-            "neo4j.query_failed query=%r params=%r",
-            _query_name(query),
-            parameters,
-        )
+        logger.exception("neo4j.generated_query_failed query=%r params=%r", _query_name(query), parameters)
+        raise
+
+
+def explain_read_query(
+    query: str,
+    params: dict[str, Any] | None = None,
+    *,
+    timeout_seconds: float,
+    metadata: dict[str, Any] | None = None,
+) -> None:
+    parameters = params or {}
+    planned = Query(f"EXPLAIN {query}", timeout=timeout_seconds, metadata=metadata or {})
+    try:
+        with driver.session(default_access_mode=READ_ACCESS) as session:
+            session.run(planned, parameters).consume()
+        logger.info("neo4j.generated_query_explain_ok query=%r", _query_name(query))
+    except Exception:
+        logger.exception("neo4j.generated_query_explain_failed query=%r", _query_name(query))
         raise
 
 

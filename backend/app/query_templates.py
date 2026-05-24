@@ -200,4 +200,44 @@ QUERY_TEMPLATES = {
                total_steps, covered_steps,
                round(100.0 * covered_steps / total_steps, 1) AS step_responsibility_pct
     """,
+
+    "entity_catalog": """
+        MATCH (n)
+        WHERE any(label IN labels(n) WHERE label IN $labels)
+        RETURN labels(n)[0] AS label,
+               coalesce(n.department_id, n.team_id, n.employee_id, n.system_id,
+                        n.project_id, n.process_id, n.step_id, n.pipeline_id,
+                        n.dataset_id) AS node_id,
+               n.name AS name,
+               coalesce(n.description, n.task_summary, n.role, '') AS description
+        ORDER BY label, name
+        LIMIT $limit
+    """,
+
+    "global_search": """
+        MATCH (matched)
+        WHERE any(label IN labels(matched) WHERE label IN $labels)
+          AND (
+            toLower(coalesce(matched.name, '')) CONTAINS toLower($term)
+            OR any(key IN keys(matched)
+                   WHERE toLower(toString(matched[key])) CONTAINS toLower($term))
+          )
+        OPTIONAL MATCH (matched)-[r]-(connected)
+        WITH matched, r, connected
+        WHERE r IS NOT NULL AND any(label IN labels(connected) WHERE label IN $labels)
+        RETURN coalesce(matched.department_id, matched.team_id, matched.employee_id,
+                        matched.system_id, matched.project_id, matched.process_id,
+                        matched.step_id, matched.pipeline_id, matched.dataset_id) AS source_id,
+               matched.name AS source,
+               coalesce(connected.department_id, connected.team_id, connected.employee_id,
+                        connected.system_id, connected.project_id, connected.process_id,
+                        connected.step_id, connected.pipeline_id, connected.dataset_id) AS target_id,
+               connected.name AS target,
+               type(r) AS relationship,
+               labels(matched)[0] AS source_type,
+               labels(connected)[0] AS target_type,
+               'Global neighborhood evidence' AS evidence_type
+        LIMIT $limit
+    """
+
 }

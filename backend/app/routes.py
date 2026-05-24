@@ -31,10 +31,11 @@ def get_kpis() -> list[dict]:
 def examples() -> list[str]:
     return [
         "Who owns system EMBARGO?",
-        "Who is responsible for Sanctions Screening?",
+        "What breaks if EMABRGO goes down?",
         "What is affected if system EMBARGO fails?",
+        "Show everything related to payment data",
+        "Which teams own systems feeding datasets used by business processes?",
         "Show the pipeline for Payment Processing",
-        "What is the next step after Receive trigger/input - Payment Processing?",
         "Show missing system owners",
         "Show KPI summary",
     ]

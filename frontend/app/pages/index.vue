@@ -27,7 +27,7 @@
 
     <section v-show="activeTab === 'explorer'" class="explorer">
       <div class="insight-grid">
-        <EvidencePanel :answer="answer" :intent="intent" :rows="rows" />
+        <EvidencePanel :answer="answer" :intent="intent" :rows="rows" :query-trace="queryTrace" />
         <NodeDetailsPanel :node="selected" :details="details" />
       </div>
 
@@ -69,6 +69,7 @@ const {
   answer,
   intent,
   rows,
+  queryTrace,
   nodes,
   edges,
   loading,

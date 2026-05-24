@@ -7,6 +7,7 @@ export function useSuperBankGraph() {
   const answer = ref("")
   const intent = ref("")
   const rows = ref<any[]>([])
+  const queryTrace = ref<any>(null)
   const nodes = ref<Record<string, any>>({})
   const edges = ref<Record<string, any>>({})
   const loading = ref(false)
@@ -48,6 +49,7 @@ export function useSuperBankGraph() {
       answer.value = data.answer
       intent.value = data.intent
       rows.value = data.rows || []
+      queryTrace.value = data.query_trace || null
       nodes.value = data.graph?.nodes || {}
       edges.value = data.graph?.edges || {}
     } catch (error) {
@@ -55,6 +57,7 @@ export function useSuperBankGraph() {
       answer.value = `Request could not be completed. ${message}`
       intent.value = "error"
       rows.value = []
+      queryTrace.value = null
       nodes.value = {}
       edges.value = {}
     } finally {
@@ -97,6 +100,7 @@ export function useSuperBankGraph() {
     answer,
     intent,
     rows,
+    queryTrace,
     nodes,
     edges,
     loading,
