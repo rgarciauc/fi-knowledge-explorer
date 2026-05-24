@@ -121,6 +121,7 @@
 
       <ClientOnly>
         <VNetworkGraph
+          :key="layoutRevision"
           ref="graph"
           v-model:layouts="layouts"
           v-model:selected-nodes="selectedNodes"
@@ -160,7 +161,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, reactive, ref, watch } from "vue"
+import { computed, nextTick, ref, watch } from "vue"
 import { VEdgeLabel, VNetworkGraph } from "v-network-graph"
 import * as vNG from "v-network-graph"
 import { ForceLayout, type ForceEdgeDatum, type ForceNodeDatum } from "v-network-graph/lib/force-layout"
@@ -174,9 +175,11 @@ import {
   type NodeDetails,
 } from "~/utils/graphPresentation"
 
+type GraphEdge = { source: string; target: string; label?: string }
+
 const props = defineProps<{
   nodes: Record<string, GraphNode>
-  edges: Record<string, { source: string; target: string; label?: string }>
+  edges: Record<string, GraphEdge>
   selectedKey?: string | null
   hoveredNodeKey?: string | null
   hoverDetails?: NodeDetails
@@ -191,6 +194,7 @@ const graph = ref<any>()
 const tooltip = ref<HTMLDivElement>()
 const layouts = ref<vNG.Layouts>({ nodes: {} })
 const selectedNodes = ref<string[]>([])
+const layoutRevision = ref(0)
 const search = ref("")
 const showLabels = ref(true)
 const showEdgeLabels = ref(false)
@@ -205,8 +209,6 @@ const tooltipPosition = ref({ left: "24px", top: "72px" })
 const layoutDirty = computed(
   () => linkDistance.value !== appliedLinkDistance.value || chargeStrength.value !== appliedChargeStrength.value,
 )
-
-const configs = reactive(vNG.getFullConfigs()) as any
 
 function forceLayout() {
   return new ForceLayout({
@@ -230,49 +232,84 @@ function forceLayout() {
   })
 }
 
-function initializeConfigs() {
-  configs.view.autoPanAndZoomOnLoad = "fit-content"
-  configs.view.mouseWheelZoomEnabled = wheelZoomEnabled.value
-  configs.view.doubleClickZoomEnabled = false
-  configs.view.layoutHandler = forceLayout()
-  configs.node.selectable = true
-  configs.node.normal.radius = (node: GraphNode) => 12 + Math.min((node.degree || 0) * 3.5, 22)
-  configs.node.normal.color = (node: GraphNode) => nodeColor(node.type)
-  configs.node.normal.strokeWidth = 2
-  configs.node.normal.strokeColor = "#071526"
-  configs.node.hover.radius = (node: GraphNode) => 15 + Math.min((node.degree || 0) * 3.5, 22)
-  configs.node.hover.strokeWidth = 3
-  configs.node.hover.strokeColor = "#d9fcff"
-  // Selected node emphasis uses the library's focus ring.
-  // v-network-graph supports node.normal and node.hover appearance,
-  // while selection is represented through node.focusring.
-  configs.node.focusring.visible = true
-  configs.node.focusring.width = 4
-  configs.node.focusring.padding = 5
-  configs.node.focusring.color = "#f8fafc"
-  configs.node.label.visible = showLabels.value
-  configs.node.label.color = "#d9e6f6"
-  configs.node.label.fontSize = 11
-  configs.node.label.direction = "south"
-  configs.node.label.margin = 7
-  configs.edge.normal.color = "#263a58"
-  configs.edge.normal.width = 1.35
-  configs.edge.hover.color = "#38bdf8"
-  configs.edge.hover.width = 2.5
-  configs.edge.selected.color = "#67e8f9"
-  configs.edge.selected.width = 2.5
-  configs.edge.label.color = "#99b2cd"
-  configs.edge.label.fontSize = 9
-  configs.edge.label.background.visible = true
-  configs.edge.label.background.color = "#081221"
-  configs.edge.label.background.padding = { vertical: 2, horizontal: 5 }
-  configs.edge.label.background.borderRadius = 3
-  configs.edge.marker.target.type = "arrow"
-  configs.edge.marker.target.width = 5
-  configs.edge.marker.target.height = 5
-  configs.edge.marker.target.color = "#40597a"
-}
-initializeConfigs()
+/*
+ * Use defineConfigs rather than mutating getFullConfigs().
+ * In v-network-graph, node.hover and several label/style branches are optional;
+ * assigning nested values on missing branches causes the Nuxt 500 render error.
+ */
+const configs = computed(() =>
+  vNG.defineConfigs({
+    view: {
+      autoPanAndZoomOnLoad: "fit-content",
+      mouseWheelZoomEnabled: wheelZoomEnabled.value,
+      doubleClickZoomEnabled: false,
+      layoutHandler: forceLayout(),
+    },
+    node: {
+      selectable: true,
+      normal: {
+        type: "circle",
+        radius: (node: GraphNode) => 12 + Math.min((node.degree || 0) * 3.5, 22),
+        color: (node: GraphNode) => nodeColor(node.type),
+        strokeWidth: 2,
+        strokeColor: "#071526",
+      },
+      hover: {
+        type: "circle",
+        radius: (node: GraphNode) => 15 + Math.min((node.degree || 0) * 3.5, 22),
+        color: (node: GraphNode) => nodeColor(node.type),
+        strokeWidth: 3,
+        strokeColor: "#d9fcff",
+      },
+      focusring: {
+        visible: true,
+        width: 4,
+        padding: 5,
+        color: "#f8fafc",
+      },
+      label: {
+        visible: showLabels.value,
+        text: "name",
+        color: "#d9e6f6",
+        fontSize: 11,
+        direction: "south",
+        margin: 7,
+      },
+    },
+    edge: {
+      normal: {
+        color: "#263a58",
+        width: 1.35,
+      },
+      hover: {
+        color: "#38bdf8",
+        width: 2.5,
+      },
+      selected: {
+        color: "#67e8f9",
+        width: 2.5,
+      },
+      label: {
+        color: "#99b2cd",
+        fontSize: 9,
+        background: {
+          visible: true,
+          color: "#081221",
+          padding: { vertical: 2, horizontal: 5 },
+          borderRadius: 3,
+        },
+      },
+      marker: {
+        target: {
+          type: "arrow",
+          width: 5,
+          height: 5,
+          color: "#40597a",
+        },
+      },
+    },
+  }),
+)
 
 const allNodes = computed(() =>
   Object.entries(props.nodes).map(([key, node]) => ({ ...node, key })),
@@ -381,7 +418,7 @@ function applyLayout() {
   appliedLinkDistance.value = linkDistance.value
   appliedChargeStrength.value = chargeStrength.value
   layouts.value = { nodes: {} }
-  configs.view.layoutHandler = forceLayout()
+  layoutRevision.value += 1
   nextTick(() => graph.value?.fitToContents())
 }
 
@@ -394,19 +431,15 @@ function resetLayout() {
 function fitGraph() {
   graph.value?.fitToContents()
 }
+
 function zoomIn() {
   graph.value?.zoomIn()
 }
+
 function zoomOut() {
   graph.value?.zoomOut()
 }
 
-watch(showLabels, value => {
-  configs.node.label.visible = value
-})
-watch(wheelZoomEnabled, value => {
-  configs.view.mouseWheelZoomEnabled = value
-})
 watch(
   () => props.selectedKey,
   key => {
@@ -414,6 +447,7 @@ watch(
   },
   { immediate: true },
 )
+
 watch(
   () => Object.keys(props.nodes).join("|") + Object.keys(props.edges).join("|"),
   () => nextTick(applyLayout),
@@ -425,6 +459,7 @@ watch(
     if (!props.hoveredNodeKey || !graph.value) return
     const position = layouts.value.nodes[props.hoveredNodeKey]
     if (!position) return
+
     await nextTick()
     const dom = graph.value.translateFromSvgToDomCoordinates(position)
     const width = tooltip.value?.offsetWidth || 300
