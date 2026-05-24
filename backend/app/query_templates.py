@@ -6,6 +6,47 @@ the alternative Process/IT_OWNER_OF/BUSINESS_OWNER_OF/DEPENDS_ON model.
 """
 
 QUERY_TEMPLATES = {
+
+    "concept_dataset": """
+        MATCH (d:Dataset)-[:USED_BY_PROCESS]->(p:BusinessProcess)
+        RETURN d.dataset_id AS source_id, d.name AS source,
+               p.process_id AS target_id, p.name AS target,
+               'USED_BY_PROCESS' AS relationship,
+               'Dataset' AS source_type, 'BusinessProcess' AS target_type,
+               'A dataset supplies evidence or information used by a process.' AS evidence_type
+        LIMIT $limit
+    """,
+
+    "concept_system": """
+        MATCH (s:System)-[:FEEDS_PIPELINE]->(p:DataPipeline)
+        RETURN s.system_id AS source_id, s.name AS source,
+               p.pipeline_id AS target_id, p.name AS target,
+               'FEEDS_PIPELINE' AS relationship,
+               'System' AS source_type, 'DataPipeline' AS target_type,
+               'A system provides operational or data input.' AS evidence_type
+        LIMIT $limit
+    """,
+
+    "concept_business_process": """
+        MATCH (p:BusinessProcess)-[:HAS_STEP]->(s:ProcessStep)
+        RETURN p.process_id AS source_id, p.name AS source,
+               s.step_id AS target_id, s.name AS target,
+               'HAS_STEP' AS relationship,
+               'BusinessProcess' AS source_type, 'ProcessStep' AS target_type,
+               'A business process is performed through ordered steps.' AS evidence_type
+        LIMIT $limit
+    """,
+
+    "concept_data_pipeline": """
+        MATCH (p:DataPipeline)-[:PRODUCES_DATASET]->(d:Dataset)
+        RETURN p.pipeline_id AS source_id, p.name AS source,
+               d.dataset_id AS target_id, d.name AS target,
+               'PRODUCES_DATASET' AS relationship,
+               'DataPipeline' AS source_type, 'Dataset' AS target_type,
+               'A data pipeline produces datasets from source-system input.' AS evidence_type
+        LIMIT $limit
+    """,
+
     "overview": """
         MATCH (d:Department)-[:HAS_TEAM]->(t:Team)
         RETURN d.department_id AS source_id, d.name AS source,

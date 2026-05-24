@@ -11,7 +11,15 @@ from .config import settings
 logger = logging.getLogger("super_bank.ollama")
 
 
-def explain(question: str, rows: list[dict[str, Any]], query_trace: dict[str, Any] | None = None) -> tuple[str, str]:
+def _ms(nanoseconds: int | float | None) -> int | None:
+    return round(nanoseconds / 1_000_000) if nanoseconds is not None else None
+
+
+def explain(
+    question: str,
+    rows: list[dict[str, Any]],
+    query_trace: dict[str, Any] | None = None,
+) -> tuple[str, str]:
     fallback = deterministic_answer(rows)
     if not settings.llm_enabled:
         logger.info("ollama.explanation_skipped reason=disabled")
@@ -39,22 +47,27 @@ def explain(question: str, rows: list[dict[str, Any]], query_trace: dict[str, An
                 "model": settings.llm_model,
                 "prompt": prompt,
                 "stream": False,
+                "keep_alive": settings.ollama_keep_alive,
                 "options": {"temperature": 0.1},
             },
             timeout=settings.llm_timeout_seconds,
         )
         response.raise_for_status()
-        text = str(response.json().get("response", "")).strip()
+        payload = response.json()
+        text = str(payload.get("response", "")).strip()
         logger.info(
-            "ollama.explanation_completed model=%s duration_ms=%d response_empty=%s",
+            "ollama.explanation_completed model=%s wall_ms=%d load_ms=%s prompt_eval_ms=%s eval_ms=%s response_empty=%s",
             settings.llm_model,
             round((perf_counter() - started) * 1000),
+            _ms(payload.get("load_duration")),
+            _ms(payload.get("prompt_eval_duration")),
+            _ms(payload.get("eval_duration")),
             not bool(text),
         )
         return (text or fallback), ("available" if text else "empty_response")
     except (httpx.HTTPError, ValueError, KeyError):
         logger.exception(
-            "ollama.explanation_failed model=%s url=%s duration_ms=%d",
+            "ollama.explanation_failed model=%s url=%s wall_ms=%d",
             settings.llm_model,
             settings.llm_url,
             round((perf_counter() - started) * 1000),

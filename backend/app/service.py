@@ -1,4 +1,6 @@
 import logging
+import re
+from time import monotonic
 from typing import Any
 
 from .config import settings
@@ -17,12 +19,71 @@ from .schema_context import ALLOWED_LABELS, TEMPLATE_INTENTS, TERM_INTENTS
 
 logger = logging.getLogger("super_bank.service")
 
+_CATALOG_CACHE: list[dict[str, Any]] = []
+_CATALOG_CACHED_AT = 0.0
+
+CONCEPTS = {
+    "dataset": {
+        "template": "concept_dataset",
+        "answer": (
+            "A dataset is a named collection of information used by the bank's processes. "
+            "In this knowledge graph, Dataset nodes represent data products such as payment "
+            "instructions, KYC profiles or sanctions snapshots, and they are linked to the "
+            "business processes that consume them."
+        ),
+    },
+    "system": {
+        "template": "concept_system",
+        "answer": (
+            "A system is an application or platform that supports operations or supplies data. "
+            "In this graph, systems can be owned by teams, used by business processes and feed data pipelines."
+        ),
+    },
+    "business process": {
+        "template": "concept_business_process",
+        "answer": (
+            "A business process is an operational activity performed by the bank. "
+            "In this graph, a process is owned and is decomposed into ordered process steps."
+        ),
+    },
+    "data pipeline": {
+        "template": "concept_data_pipeline",
+        "answer": (
+            "A data pipeline transports or transforms information from a source system into a dataset. "
+            "In this graph, pipelines connect systems to datasets used by business processes."
+        ),
+    },
+}
+
+
+def _definition_concept(question: str) -> str | None:
+    q = re.sub(r"[^a-z0-9 ]+", " ", question.lower())
+    q = re.sub(r"\s+", " ", q).strip()
+    patterns = (
+        r"^(?:what is|what s|define|explain)\s+(?:a |an |the )?(dataset|system|business process|data pipeline)s?\s*$",
+        r"^(?:what are)\s+(dataset|system|business process|data pipeline)s?\s*$",
+    )
+    for pattern in patterns:
+        match = re.match(pattern, q)
+        if match:
+            return match.group(1)
+    return None
+
 
 def _catalog() -> list[dict[str, Any]]:
-    return read(
+    global _CATALOG_CACHE, _CATALOG_CACHED_AT
+    now = monotonic()
+    if _CATALOG_CACHE and now - _CATALOG_CACHED_AT < settings.entity_catalog_cache_seconds:
+        logger.debug("entity_catalog.cache_hit entities=%d", len(_CATALOG_CACHE))
+        return _CATALOG_CACHE
+
+    _CATALOG_CACHE = read(
         QUERY_TEMPLATES["entity_catalog"],
         {"labels": sorted(ALLOWED_LABELS), "limit": 500},
     )
+    _CATALOG_CACHED_AT = now
+    logger.info("entity_catalog.cache_refresh entities=%d", len(_CATALOG_CACHE))
+    return _CATALOG_CACHE
 
 
 def _global_rows(term: str) -> list[dict[str, Any]]:
@@ -39,7 +100,33 @@ def _template_params(intent: str, term: str | None) -> dict[str, Any]:
     return params
 
 
+def _concept_response(question: str, concept: str) -> dict[str, Any]:
+    definition = CONCEPTS[concept]
+    rows = read(QUERY_TEMPLATES[definition["template"]], {"limit": 18})
+    trace = QueryTrace(
+        query_method="fast_concept_definition",
+        template=definition["template"],
+        interpreted_intent="concept_definition",
+        confidence=1.0,
+        resolved_term=concept.title(),
+        entity_candidates=[],
+    )
+    logger.info("question.fast_path intent=concept_definition concept=%s rows=%d", concept, len(rows))
+    return {
+        "intent": "concept_definition",
+        "answer": definition["answer"],
+        "rows": rows,
+        "graph": build_graph(rows),
+        "llm_status": "not_called_fast_path",
+        "query_trace": trace.model_dump(),
+    }
+
+
 def answer_question(question: str) -> dict[str, Any]:
+    concept = _definition_concept(question)
+    if concept:
+        return _concept_response(question, concept)
+
     catalog = _catalog()
     decision, candidates = detect_intent(question, catalog)
     selected_candidate = best_candidate_for_intent(decision.intent, candidates)
@@ -64,7 +151,6 @@ def answer_question(question: str) -> dict[str, Any]:
         trace.template = decision.intent
         rows = read(QUERY_TEMPLATES[decision.intent], _template_params(decision.intent, resolved_term))
 
-        # A recognized intent with no rows should not end the interaction.
         if not rows and settings.global_search_enabled and resolved_term and decision.intent not in {"kpis", "overview"}:
             trace.fallback_reason = f"Approved template '{decision.intent}' returned no evidence."
             rows = _global_rows(resolved_term)
@@ -106,7 +192,6 @@ def answer_question(question: str) -> dict[str, Any]:
                 trace.query_method = "global_search_after_generated_query"
                 trace.template = "global_search"
 
-    # Last chance: generated read-only retrieval for unsolved non-administrative questions.
     if (
         not rows
         and settings.generated_cypher_enabled

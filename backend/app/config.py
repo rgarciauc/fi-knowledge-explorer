@@ -10,6 +10,8 @@ class Settings(BaseSettings):
     llm_url: str = "http://localhost:11434/api/generate"
     llm_model: str = "llama3.2:3b"
     llm_timeout_seconds: float = 120.0
+    ollama_keep_alive: str = "-1"
+    entity_catalog_cache_seconds: float = 300.0
 
     intent_detection_enabled: bool = True
     global_search_enabled: bool = True

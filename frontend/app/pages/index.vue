@@ -26,20 +26,36 @@
     </nav>
 
     <section v-show="activeTab === 'explorer'" class="explorer">
-      <div class="insight-grid">
-        <EvidencePanel :answer="answer" :intent="intent" :rows="rows" :query-trace="queryTrace" />
-        <NodeDetailsPanel :node="selected" :details="details" />
-      </div>
+      <section v-if="loading" class="loading-workspace" aria-live="polite" aria-busy="true">
+        <div class="loading-spinner" />
+        <div>
+          <p class="loading-eyebrow">Preparing answer</p>
+          <h2>Searching the knowledge graph…</h2>
+          <p class="loading-question">{{ pendingQuestion }}</p>
+          <div class="loading-steps">
+            <span>Interpreting intent</span>
+            <span>Retrieving evidence</span>
+            <span>Preparing graph</span>
+          </div>
+        </div>
+      </section>
 
-      <GraphViewer
-        :nodes="nodes"
-        :edges="edges"
-        :selected-key="selectedKey"
-        :hovered-node-key="hoveredNodeKey"
-        :hover-details="hoverDetails"
-        @select="selectNode"
-        @hover="hoverNode"
-      />
+      <template v-else>
+        <div class="insight-grid">
+          <EvidencePanel :answer="answer" :intent="intent" :rows="rows" :query-trace="queryTrace" />
+          <NodeDetailsPanel :node="selected" :details="details" />
+        </div>
+
+        <GraphViewer
+          :nodes="nodes"
+          :edges="edges"
+          :selected-key="selectedKey"
+          :hovered-node-key="hoveredNodeKey"
+          :hover-details="hoverDetails"
+          @select="selectNode"
+          @hover="hoverNode"
+        />
+      </template>
     </section>
 
     <KpiDashboard
@@ -66,6 +82,7 @@ const kpiError = ref("")
 
 const {
   question,
+  pendingQuestion,
   answer,
   intent,
   rows,

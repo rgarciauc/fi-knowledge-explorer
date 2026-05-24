@@ -82,6 +82,7 @@ const props = defineProps<{
 const methodLabel = computed(() => {
   const method = props.queryTrace?.query_method
   const labels: Record<string, string> = {
+    fast_concept_definition: "Instant concept explanation",
     approved_template: "Approved query template",
     global_search: "Broad graph search",
     global_search_after_empty_template: "Broad search fallback",
@@ -95,6 +96,7 @@ const methodLabel = computed(() => {
 
 const methodClass = computed(() => {
   const method = props.queryTrace?.query_method || ""
+  if (method === "fast_concept_definition") return "template"
   if (method.includes("generated")) return "generated"
   if (method.includes("global") || method.includes("clarification")) return "fallback"
   return "template"

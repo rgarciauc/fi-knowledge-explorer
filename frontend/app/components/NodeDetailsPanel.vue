@@ -9,7 +9,14 @@
       </div>
     </div>
 
-    <p v-if="details?.error" class="detail-error">{{ details.error }}</p>
+    <div v-if="details?.error" class="detail-warning">
+      <p>{{ details.error }}</p>
+      <details v-if="(details as any).diagnostic">
+        <summary>Diagnostic details</summary>
+        <p>{{ (details as any).diagnostic }}</p>
+      </details>
+    </div>
+
     <template v-else>
       <p class="summary">{{ nodeSummary(node, details) }}</p>
       <dl v-if="properties.length" class="property-grid">
@@ -37,7 +44,7 @@ const properties = computed(() => {
   const excluded = new Set(["name", "description", "task_summary"])
   return Object.entries(props.details.properties)
     .filter(([key, value]) => !excluded.has(key) && value !== null && value !== "")
-    .slice(0, 6)
+    .slice(0, 8)
     .map(([key, value]) => ({
       key: key.replaceAll("_", " "),
       value: String(value),
@@ -52,10 +59,17 @@ const properties = computed(() => {
 .node-heading h2 { font-size: 1.12rem; margin: 0 0 4px; color: #edf4fc; }
 .node-heading .muted { margin: 0; }
 .summary { margin: 18px 0; line-height: 1.55; color: #c1d0e2; }
-.property-grid { display: grid; grid-template-columns: minmax(95px, .8fr) 1.4fr; gap: 9px 12px; margin: 0; padding-top: 13px; border-top: 1px solid #182d47; font-size: .8rem; }
+.property-grid { display: grid; grid-template-columns: minmax(95px, .8fr) 1.4fr; gap: 9px 12px; margin: 18px 0 0; padding-top: 13px; border-top: 1px solid #182d47; font-size: .8rem; }
 .property-grid dt { text-transform: capitalize; color: #7089a7; }
 .property-grid dd { margin: 0; color: #dbe7f4; word-break: break-word; }
 .detail-placeholder { color: #91a8c2; display: flex; flex-direction: column; justify-content: center; }
 .detail-placeholder p:last-child { margin: 0; line-height: 1.5; }
-.detail-error { color: #fda4af; }
+.detail-warning {
+  margin-top: 18px; padding: 12px; border-radius: 10px;
+  border: 1px solid rgba(251,191,36,.25); background: rgba(251,191,36,.08);
+  color: #fcd34d; font-size: .84rem; line-height: 1.45;
+}
+.detail-warning p { margin: 0; }
+.detail-warning details { margin-top: 9px; color: #b7c9dc; }
+.detail-warning details p { padding-top: 8px; font-size: .76rem; }
 </style>

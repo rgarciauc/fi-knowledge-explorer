@@ -57,6 +57,8 @@ services:
     restart: unless-stopped
     ports:
       - "11434:11434"
+    environment:
+      OLLAMA_KEEP_ALIVE: "${OLLAMA_KEEP_ALIVE:--1}"
     volumes:
       - ollama_data:/root/.ollama
     logging: *container-logging
@@ -77,8 +79,9 @@ services:
     environment:
       OLLAMA_HOST: http://ollama:11434
       OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2:3b}"
+      OLLAMA_KEEP_ALIVE: "${OLLAMA_KEEP_ALIVE:--1}"
     entrypoint: ["/bin/sh", "-c"]
-    command: ["ollama pull \"$${OLLAMA_MODEL}\""]
+    command: ["ollama pull \"$${OLLAMA_MODEL}\" && ollama run \"$${OLLAMA_MODEL}\" \"\""]
     volumes:
       - ollama_data:/root/.ollama
     logging: *container-logging
@@ -99,6 +102,7 @@ services:
       LLM_ENABLED: "${LLM_ENABLED:-true}"
       LLM_URL: http://ollama:11434/api/generate
       LLM_MODEL: "${OLLAMA_MODEL:-llama3.2:3b}"
+      OLLAMA_KEEP_ALIVE: "${OLLAMA_KEEP_ALIVE:--1}"
       LOG_LEVEL: "${LOG_LEVEL:-INFO}"
       LOG_TO_FILE: "${LOG_TO_FILE:-true}"
       LOG_DIR: /app/logs

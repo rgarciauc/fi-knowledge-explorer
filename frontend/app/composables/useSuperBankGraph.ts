@@ -4,6 +4,7 @@ import { STORED_NODE_TYPES } from "~/utils/graphPresentation"
 export function useSuperBankGraph() {
   const api = useApi()
   const question = ref("What is affected if system EMBARGO fails?")
+  const pendingQuestion = ref("")
   const answer = ref("")
   const intent = ref("")
   const rows = ref<any[]>([])
@@ -25,6 +26,20 @@ export function useSuperBankGraph() {
     return `${node.type}:${node.id}`
   }
 
+  function clearResult() {
+    answer.value = ""
+    intent.value = ""
+    rows.value = []
+    queryTrace.value = null
+    nodes.value = {}
+    edges.value = {}
+    selectedKey.value = null
+    details.value = null
+    hoveredNodeKey.value = null
+    hoverDetails.value = null
+    detailCache.clear()
+  }
+
   async function fetchNodeDetails(nodeKey: string): Promise<NodeDetails> {
     const node = nodes.value[nodeKey]
     if (!node?.id || !STORED_NODE_TYPES.has(node.type)) return null
@@ -38,14 +53,15 @@ export function useSuperBankGraph() {
   }
 
   async function ask() {
+    const submitted = question.value.trim()
+    if (!submitted || loading.value) return
+
+    pendingQuestion.value = submitted
     loading.value = true
-    selectedKey.value = null
-    details.value = null
-    hoveredNodeKey.value = null
-    hoverDetails.value = null
+    clearResult()
 
     try {
-      const data = await api.ask(question.value)
+      const data = await api.ask(submitted)
       answer.value = data.answer
       intent.value = data.intent
       rows.value = data.rows || []
@@ -56,12 +72,9 @@ export function useSuperBankGraph() {
       const message = error instanceof Error ? error.message : "Unknown application error."
       answer.value = `Request could not be completed. ${message}`
       intent.value = "error"
-      rows.value = []
-      queryTrace.value = null
-      nodes.value = {}
-      edges.value = {}
     } finally {
       loading.value = false
+      pendingQuestion.value = ""
     }
   }
 
@@ -72,8 +85,12 @@ export function useSuperBankGraph() {
     try {
       details.value = await fetchNodeDetails(nodeKey)
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Unable to load node details."
-      details.value = { error: message }
+      const diagnostic = error instanceof Error ? error.message : "Unable to load node details."
+      console.error("[NODE DETAIL ERROR]", { nodeKey, diagnostic })
+      details.value = {
+        error: "Detailed properties are temporarily unavailable for this node. Its graph connections remain visible.",
+        diagnostic,
+      } as any
     }
   }
 
@@ -83,7 +100,6 @@ export function useSuperBankGraph() {
     hoverDetails.value = null
     if (!nodeKey) return
 
-    // Avoid one network request for every node crossed quickly by the cursor.
     await new Promise(resolve => setTimeout(resolve, 140))
     if (sequence !== hoverSequence || hoveredNodeKey.value !== nodeKey) return
 
@@ -97,6 +113,7 @@ export function useSuperBankGraph() {
 
   return {
     question,
+    pendingQuestion,
     answer,
     intent,
     rows,

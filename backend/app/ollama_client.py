@@ -12,6 +12,10 @@ logger = logging.getLogger("super_bank.ollama")
 ResponseModel = TypeVar("ResponseModel", bound=BaseModel)
 
 
+def _ms(nanoseconds: int | float | None) -> int | None:
+    return round(nanoseconds / 1_000_000) if nanoseconds is not None else None
+
+
 def structured_generate(task: str, prompt: str, response_model: type[ResponseModel]) -> ResponseModel | None:
     """Ask Ollama for validated JSON conforming to a Pydantic JSON schema."""
     if not settings.llm_enabled:
@@ -27,23 +31,27 @@ def structured_generate(task: str, prompt: str, response_model: type[ResponseMod
                 "prompt": prompt,
                 "stream": False,
                 "format": response_model.model_json_schema(),
+                "keep_alive": settings.ollama_keep_alive,
                 "options": {"temperature": 0.0},
             },
             timeout=settings.llm_timeout_seconds,
         )
         response.raise_for_status()
-        raw = str(response.json().get("response", "")).strip()
+        payload = response.json()
+        raw = str(payload.get("response", "")).strip()
         parsed = response_model.model_validate_json(raw)
         logger.info(
-            "ollama.structured_completed task=%s model=%s duration_ms=%d",
+            "ollama.structured_completed task=%s model=%s wall_ms=%d load_ms=%s eval_ms=%s",
             task,
             settings.llm_model,
             round((perf_counter() - started) * 1000),
+            _ms(payload.get("load_duration")),
+            _ms(payload.get("eval_duration")),
         )
         return parsed
     except (httpx.HTTPError, ValidationError, ValueError, KeyError):
         logger.exception(
-            "ollama.structured_failed task=%s model=%s duration_ms=%d",
+            "ollama.structured_failed task=%s model=%s wall_ms=%d",
             task,
             settings.llm_model,
             round((perf_counter() - started) * 1000),

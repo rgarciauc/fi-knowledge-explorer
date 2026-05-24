@@ -1,3 +1,5 @@
+import logging
+
 from fastapi import APIRouter, HTTPException
 
 from .db import node_details, read
@@ -6,6 +8,7 @@ from .schemas import AskRequest
 from .service import answer_question
 
 
+logger = logging.getLogger("super_bank.api")
 router = APIRouter(prefix="/api")
 
 
@@ -16,7 +19,14 @@ def ask(payload: AskRequest) -> dict:
 
 @router.get("/nodes/{label}/{node_id}")
 def get_node(label: str, node_id: str) -> dict:
-    details = node_details(label, node_id)
+    try:
+        details = node_details(label, node_id)
+    except Exception as exc:
+        logger.exception("node_detail_endpoint_failed label=%s node_id=%s", label, node_id)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Node details could not be serialized or loaded for {label}/{node_id}.",
+        ) from exc
     if not details:
         raise HTTPException(status_code=404, detail="Node not found")
     return details
@@ -30,12 +40,12 @@ def get_kpis() -> list[dict]:
 @router.get("/examples")
 def examples() -> list[str]:
     return [
+        "What is a dataset?",
         "Who owns system EMBARGO?",
-        "What breaks if EMABRGO goes down?",
+        "What braks if EMABRGO goes down?",
         "What is affected if system EMBARGO fails?",
         "Show everything related to payment data",
         "Which teams own systems feeding datasets used by business processes?",
         "Show the pipeline for Payment Processing",
-        "Show missing system owners",
         "Show KPI summary",
     ]
