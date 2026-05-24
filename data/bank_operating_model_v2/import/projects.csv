@@ -1,0 +1,3 @@
+project_id,name,description,status,priority
+PROJ_INNOV_01,Next-Generation Compliance Analytics,Investigation of enhanced surveillance and compliance analytics opportunities.,Discovery,Medium
+PROJ_DORA_01,DORA ICT Dependency Mapping,Development of ICT asset dependency and resilience evidence reporting.,Active,High

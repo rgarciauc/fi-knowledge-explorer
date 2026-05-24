@@ -1,66 +1,26 @@
-# Active Neo4j dataset
+# Active Neo4j dataset — Bank Operating Model v2
 
-The database currently loaded by the user came from:
-
-```text
-data/neo4j_starter/import/
-data/neo4j_starter/cypher/import.cypher
-```
-
-That is the **active source dataset** for this compatibility-fixed project.
-
-The files formerly under `data/csv/` use a different schema (`Process`,
-`IT_OWNER_OF`, `DEPENDS_ON`, controls/risks). They have been preserved in:
+The intended active data source is now:
 
 ```text
-data/alternate_model_not_loaded/csv/
+data/bank_operating_model_v2/import/
+data/bank_operating_model_v2/cypher/import.cypher
 ```
 
-They are not used by the backend or the active Neo4j loader.
-
-## Why this is necessary
-
-The loaded starter graph contains:
+The prior starter model remains historical/deprecated for this application generation:
 
 ```text
-BusinessProcess
-DataPipeline
-Dataset
-OWNS_SYSTEM
-FEEDS_PIPELINE
-PRODUCES_DATASET
-USED_BY_PROCESS
-RESPONSIBLE_FOR_STEP
-PERFORMS_STEP
+data/neo4j_starter/
 ```
 
-The alternate CSV model expected:
+Do not import both into the same live development database. The models overlap on labels while differing materially in systems, ownership, processes, controls and regulatory relationships.
 
-```text
-Process
-IT_OWNER_OF / BUSINESS_OWNER_OF
-DEPENDS_ON
-NEXT_STEP
-Control
-Risk
-```
+## Activation requirement
 
-Do not mix both models in one Neo4j database until a deliberate migration has been designed.
-
-## Start the already-loaded Neo4j database
+Because the previous graph was already imported into the Neo4j named volume, switching the Compose mounts alone is not enough. For a clean development activation, intentionally reset only the Neo4j volume and load v2:
 
 ```bash
-docker compose -f data/neo4j_starter/docker-compose.yml up -d
+./scripts/activate-bank-operating-model-v2.sh
 ```
 
-The starter import uses `MERGE`, so re-running its import against the same
-database is idempotent for the relationships it defines. It does not load the
-alternate model.
-
-## Verify what is loaded
-
-```cypher
-MATCH (n)
-RETURN labels(n)[0] AS label, count(*) AS total
-ORDER BY label;
-```
+Ollama model storage is preserved by that script.

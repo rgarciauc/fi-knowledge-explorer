@@ -1,0 +1,6 @@
+dependent_system_id,provider_system_id,dependency_type,description
+SYS_SANCTIONS,SYS_INPUT,EXTERNAL_DATA_DEPENDENCY,Sanctions Monitoring consumes regulatory screening feeds from Input Hub.
+SYS_MARKET,SYS_INPUT,EXTERNAL_DATA_DEPENDENCY,Market Abuse Surveillance consumes market activity from Input Hub.
+SYS_SETTLE,SYS_PAYMENT_CORE,PAYMENT_RECORD_DEPENDENCY,Settlement reconciles records against payment orchestration status.
+SYS_PAYMENT_CORE,SYS_SANCTIONS,RELEASE_DECISION_DEPENDENCY,Payments Core requires compliance decision before release.
+SYS_PAYMENT_CORE,SYS_SETTLE,SETTLEMENT_STATUS_DEPENDENCY,Payments Core updates final status using settlement outcome.

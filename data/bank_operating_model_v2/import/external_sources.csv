@@ -1,0 +1,4 @@
+source_id,name,source_type,description,classification
+EXT_SANCTIONS,External Sanctions & Restricted Parties Feed,Regulatory Data Feed,External restricted-party and sanctions-source information consumed for screening.,Restricted
+EXT_MARKET,External Market Activity Feed,Market Data Feed,External trading and market-activity observations used for surveillance.,Confidential
+EXT_SETTLE,External Settlement Confirmation Feed,Settlement Feed,External account movement and settlement confirmation information.,Confidential

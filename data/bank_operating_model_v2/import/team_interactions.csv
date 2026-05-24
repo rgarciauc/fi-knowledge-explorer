@@ -1,0 +1,11 @@
+source_team_id,target_team_id,interaction_type,description
+T_PAY_IT,T_COMP_IT,SUBMITS_FOR_COMPLIANCE,Submits payment instructions for compliance checks before release.
+T_COMP_IT,T_PAY_IT,RETURNS_GO_NO_GO,Returns GO or NO-GO release decision based on screening outcome.
+T_PAY_IT,T_SETTLE,SENDS_FOR_SETTLEMENT,Sends released instruction for settlement and confirmation.
+T_SETTLE,T_PAY_IT,RETURNS_SETTLEMENT_STATUS,Returns settlement and reconciliation status for automated payment update.
+T_DATA,T_COMP_IT,PROVIDES_EXTERNAL_DATA,Supplies validated external feeds for sanctions and surveillance systems.
+T_IAM,T_PAY_IT,GOVERNS_ACCESS,Controls user permissions to payment systems.
+T_IAM,T_COMP_IT,GOVERNS_ACCESS,Controls user permissions to compliance systems.
+T_REG,T_PAY_IT,OVERSEES_REGULATORY_COMPLIANCE,Reviews payment technology for regulatory compliance.
+T_REG,T_COMP_IT,OVERSEES_REGULATORY_COMPLIANCE,Reviews compliance technology and controls.
+T_INNOV,T_COMP_IT,EXPLORES_FUTURE_CAPABILITY,Develops potential compliance innovation opportunities.

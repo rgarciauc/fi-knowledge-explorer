@@ -1,0 +1,4 @@
+source_id,system_id,description
+EXT_SANCTIONS,SYS_INPUT,External sanctions and restricted-party data feed.
+EXT_MARKET,SYS_INPUT,External market-activity data feed.
+EXT_SETTLE,SYS_SETTLE,External settlement confirmation feed.

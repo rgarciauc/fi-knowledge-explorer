@@ -1,0 +1,24 @@
+team_id,system_id,usage_purpose
+T_PAY_IT,SYS_SEPA,Send SEPA instructions
+T_PAY_IT,SYS_SWIFT,Send SWIFT instructions
+T_PAY_IT,SYS_PAYMENT_CORE,Track payment status
+T_COMP_IT,SYS_SANCTIONS,Operate sanctions screening
+T_COMP_IT,SYS_MARKET,Operate market-abuse surveillance
+T_COMP_IT,SYS_INPUT,Consume external compliance feeds
+T_SETTLE,SYS_SETTLE,Verify and reconcile settlement
+T_DATA,SYS_INPUT,Operate external data integration
+T_SERVICE,SYS_TICKET,Track support tickets
+T_TICKET,SYS_TICKET,Administer ticket workflows
+T_IAM,SYS_IDM,Govern system permissions
+T_INNOV,SYS_INNOV,Develop prototypes
+T_REG,SYS_TICKET,Track oversight actions
+T_PAY_BUS,SYS_PAYMENT_CORE,Review business outcomes
+T_COMP_BUS,SYS_SANCTIONS,Review screening decisions
+T_PAY_IT,SYS_TICKET,Track issues
+T_COMP_IT,SYS_TICKET,Track issues
+T_SETTLE,SYS_TICKET,Track issues
+T_DATA,SYS_TICKET,Track issues
+T_IAM,SYS_TICKET,Track issues
+T_INNOV,SYS_TICKET,Track issues
+T_PAY_BUS,SYS_TICKET,Track issues
+T_COMP_BUS,SYS_TICKET,Track issues

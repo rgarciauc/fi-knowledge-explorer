@@ -1,0 +1,8 @@
+control_id,name,control_type,description,frequency
+CTRL_SCREEN,Sanctions and AML Screening Gate,Preventive,Screens payment instructions and returns GO or NO-GO prior to release.,Per payment
+CTRL_MARKET,Market Abuse Alert Monitoring,Detective,Detects potentially unusual trading patterns for compliance review.,Continuous
+CTRL_RECON,Settlement Reconciliation Control,Detective,Confirms actual settlement and reconciles internal and external evidence.,Per payment
+CTRL_ACCESS,Identity and Access Review,Preventive,Governs permissions and periodic entitlement review for systems.,Periodic
+CTRL_TICKET,Ticket Resolution Tracking,Corrective,"Records issue ownership, investigation and resolution status.",Per ticket
+CTRL_DORA,ICT Dependency Oversight,Governance,"Reviews supported functions, systems, dependencies and resilience evidence.",Periodic
+CTRL_GDPR,Personal Data Processing Review,Governance,Reviews processing systems and data-handling controls for privacy compliance.,Periodic

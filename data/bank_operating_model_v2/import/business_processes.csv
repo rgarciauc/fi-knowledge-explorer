@@ -1,0 +1,9 @@
+process_id,name,description,criticality,status
+BP_PAYMENT,End-to-End Payment Execution,"Payment moves through instruction creation, compliance gate, release, settlement and status update.",Critical,Active
+BP_SCREENING,Payment Compliance Screening,"Sanctions, AML and restricted-party checks produce GO or NO-GO decision.",Critical,Active
+BP_MARKET,Market Abuse Surveillance,Trading activity is monitored and alerts are reviewed by compliance.,Critical,Active
+BP_SETTLEMENT,Settlement and Reconciliation,Settled movement is checked against internal payment records.,Critical,Active
+BP_DATA,External Data Ingestion,External sources are normalised through Input Hub and made available to consumers.,Critical,Active
+BP_ACCESS,Identity and Access Governance,User identities and permissions are administered and reviewed.,High,Active
+BP_SUPPORT,IT Incident and Request Resolution,"Tickets are received, triaged and resolved by supporting teams.",High,Active
+BP_REG,EU Regulatory Oversight,Systems and teams are monitored against DORA and GDPR obligations.,High,Active

@@ -19,6 +19,7 @@ export type NodeDetails = {
   properties?: Record<string, unknown>
   relationships?: Array<Record<string, unknown>>
   error?: string
+  diagnostic?: string
 } | null
 
 export const NODE_TYPE_STYLES: Record<string, { color: string; label: string }> = {
@@ -26,25 +27,23 @@ export const NODE_TYPE_STYLES: Record<string, { color: string; label: string }> 
   Team: { color: "#2dd4bf", label: "Teams" },
   Employee: { color: "#fb7185", label: "Employees" },
   System: { color: "#fb923c", label: "Systems" },
+  ExternalSource: { color: "#7dd3fc", label: "External Sources" },
+  RegulatoryFramework: { color: "#f472b6", label: "Regulatory Frameworks" },
+  Control: { color: "#fbbf24", label: "Controls" },
+  Responsibility: { color: "#c4b5fd", label: "Responsibilities" },
   Project: { color: "#d38cff", label: "Projects" },
   BusinessProcess: { color: "#72e69b", label: "Business Processes" },
   ProcessStep: { color: "#60a5fa", label: "Process Steps" },
   DataPipeline: { color: "#38bdf8", label: "Data Pipelines" },
-  Dataset: { color: "#facc15", label: "Datasets" },
-  Risk: { color: "#94a3b8", label: "Risks" },
+  Dataset: { color: "#fde047", label: "Datasets" },
+  Risk: { color: "#ef4444", label: "Risks" },
   Entity: { color: "#94a3b8", label: "Entities" },
 }
 
 export const STORED_NODE_TYPES = new Set([
-  "Department",
-  "Team",
-  "Employee",
-  "System",
-  "Project",
-  "BusinessProcess",
-  "ProcessStep",
-  "DataPipeline",
-  "Dataset",
+  "Department", "Team", "Employee", "System", "ExternalSource",
+  "RegulatoryFramework", "Control", "Responsibility", "Project",
+  "BusinessProcess", "ProcessStep", "DataPipeline", "Dataset",
 ])
 
 export function nodeColor(type: string): string {
@@ -66,7 +65,6 @@ export function nodeSummary(node: GraphNode | null | undefined, details: NodeDet
     properties.criticality ? `Criticality: ${properties.criticality}` : null,
     properties.status ? `Status: ${properties.status}` : null,
   ]
-
   const first = candidates.find(value => typeof value === "string" && value.trim().length > 0)
   if (typeof first === "string") return first
   return `${nodeTypeLabel(node.type)} node returned by the graph query.`

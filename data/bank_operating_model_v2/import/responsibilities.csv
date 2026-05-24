@@ -1,0 +1,14 @@
+responsibility_id,name,description,category
+RESP_PAY_RELEASE,Payment instruction release,"Create, validate and release approved SEPA or SWIFT payment instructions.",Payments
+RESP_COMP_DECISION,Compliance GO or NO-GO decision,"Review sanctions, AML, restricted parties and unusual-risk alerts before payment release.",Compliance
+RESP_MARKET_REVIEW,Market-abuse alert review,Assess surveillance alerts and document compliance outcomes.,Compliance
+RESP_SETTLEMENT,Settlement verification,Confirm settlement completion and investigate mismatches.,Settlement
+RESP_DATA_QUALITY,External feed quality,Maintain input pipelines and monitor data-quality assurance.,Data
+RESP_L12_SUPPORT,Level 1 and Level 2 support,"Triage incidents, requests and user issues affecting teams.",Support
+RESP_TICKETING,Ticketing platform operation,"Maintain ticket tracking, workflow and resolution evidence.",Support
+RESP_ACCESS,Identity and permission governance,"Maintain identity lifecycle, entitlements and reviews.",Identity
+RESP_INNOV,Technology innovation,"Explore, design and prototype potential future systems.",Innovation
+RESP_DORA,DORA oversight,"Monitor ICT asset, dependency and resilience governance.",Regulatory
+RESP_GDPR,GDPR oversight,Monitor data-processing governance and privacy controls.,Regulatory
+RESP_SYSTEM_IT_OWNER,IT system ownership,Accountable for technical health and delivery of a system.,Ownership
+RESP_SYSTEM_BUS_OWNER,Business system ownership,"Accountable for business purpose, use and release policy of a system.",Ownership

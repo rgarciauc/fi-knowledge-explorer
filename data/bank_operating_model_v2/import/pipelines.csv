@@ -1,0 +1,4 @@
+pipeline_id,name,description,criticality,status
+PIPE_SANCTIONS,Input Hub to Sanctions Monitoring Feed,Supplies normalised sanctions and restricted-party information.,Critical,Active
+PIPE_MARKET,Input Hub to Market Abuse Surveillance Feed,Supplies trading-activity data for surveillance.,Critical,Active
+PIPE_SETTLEMENT,Settlement Confirmation Feed,Supplies external settlement evidence for reconciliation.,Critical,Active

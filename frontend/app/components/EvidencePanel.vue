@@ -83,6 +83,7 @@ const methodLabel = computed(() => {
   const method = props.queryTrace?.query_method
   const labels: Record<string, string> = {
     fast_concept_definition: "Instant concept explanation",
+    approved_template_v2: "Approved bank-model v2 query",
     approved_template: "Approved query template",
     global_search: "Broad graph search",
     global_search_after_empty_template: "Broad search fallback",

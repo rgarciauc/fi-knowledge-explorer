@@ -46,6 +46,14 @@ export type KpiRecord = {
   total_systems: number
   covered_systems: number
   system_owner_coverage_pct: number
+  systems_with_it_owner: number
+  systems_with_business_owner: number
+  business_owner_coverage_pct: number
+  total_teams: number
+  teams_with_support: number
+  support_coverage_pct: number
+  systems_with_access_governance: number
+  access_governance_pct: number
   total_processes: number
   covered_processes: number
   process_owner_coverage_pct: number

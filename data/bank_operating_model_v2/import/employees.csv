@@ -1,0 +1,23 @@
+employee_id,team_id,name,role,task_summary,status
+E_PAY_LEAD,T_PAY_IT,Lena Fischer,Head of IT Payments,Technology owner for payment-channel systems and release automation.,Active
+E_PAY_ENG,T_PAY_IT,Jonas Meyer,Payment Integration Engineer,Builds and monitors SEPA and SWIFT instruction delivery integrations.,Active
+E_COMP_IT_LEAD,T_COMP_IT,Amira Haddad,Head of IT Compliance,Technology owner for sanctions and surveillance platforms; oversees compliance integration reliability.,Active
+E_COMP_IT_ENG,T_COMP_IT,Noah Becker,Compliance Systems Engineer,Maintains sanctions screening interfaces and surveillance alert pipelines.,Active
+E_SETTLE_LEAD,T_SETTLE,Sofia Wagner,Head of Settlement & Reconciliation,Owns settlement verification technology and reconciliation controls.,Active
+E_SETTLE_ANALYST,T_SETTLE,David Roth,Reconciliation Analyst,Investigates settlement breaks and evidence mismatches.,Active
+E_DATA_LEAD,T_DATA,Mina Keller,Head of Data Integration,Technology owner for Input Hub and data-quality pipelines.,Active
+E_DATA_ENG,T_DATA,Omar Saleh,Data Pipeline Engineer,Maintains external data feeds and validates pipeline quality.,Active
+E_SERVICE_LEAD,T_SERVICE,Eva Schmitt,IT Service Desk Lead,Runs level 1 and level 2 incident support coordination.,Active
+E_SERVICE_AGENT,T_SERVICE,Paul Weber,Support Analyst,Triage and resolution of operational incidents and access requests.,Active
+E_TICKET_LEAD,T_TICKET,Yara Mansour,Ticketing Platform Lead,Technology owner for issue tracking and resolution workflows.,Active
+E_TICKET_ADMIN,T_TICKET,Tom Berger,Ticketing Administrator,"Maintains ticket queues, SLAs and workflow configuration.",Active
+E_IAM_LEAD,T_IAM,Karim Haddad,Head of Identity Management,Technology owner for identity manager and access governance.,Active
+E_IAM_ANALYST,T_IAM,Lea Hoffmann,Access Governance Analyst,Reviews entitlements and privileged-access requests.,Active
+E_INNOV_LEAD,T_INNOV,Marta Novak,Innovation Lead,Owns research pipeline for potential new systems.,Active
+E_INNOV_DEV,T_INNOV,Felix Brandt,Innovation Engineer,Builds proofs of concept and assesses technical opportunity.,Active
+E_REG_LEAD,T_REG,Isabelle Laurent,EU Regulatory Officer,Monitors DORA and GDPR obligations across ICT operations.,Active
+E_REG_ANALYST,T_REG,Henrik Braun,Regulatory Assurance Analyst,Maps controls and evidence to applicable frameworks.,Active
+E_PAY_BUS_LEAD,T_PAY_BUS,Clara Vogel,Payments Business Owner,"Business owner for SEPA, SWIFT and payment ledger outcomes.",Active
+E_PAY_OPS,T_PAY_BUS,Max König,Payments Operations Manager,Owns business payment release and exception handling procedures.,Active
+E_COMP_BUS_LEAD,T_COMP_BUS,Nadia Rahman,Compliance Business Owner,Business owner for sanctions and market-abuse decisions.,Active
+E_COMP_ANALYST,T_COMP_BUS,Lucas Stein,Financial Crime Analyst,"Reviews sanctions, AML and unusual-risk alerts and records GO or NO-GO outcomes.",Active

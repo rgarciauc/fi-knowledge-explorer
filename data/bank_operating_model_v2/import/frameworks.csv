@@ -1,0 +1,5 @@
+framework_id,name,framework_type,description
+FW_DORA,Digital Operational Resilience Act (DORA),EU Regulation,"ICT operational resilience, ICT-supported function, asset and dependency oversight context."
+FW_GDPR,General Data Protection Regulation (GDPR),EU Regulation,Personal-data protection and processing governance context.
+FW_AML,Sanctions and AML Compliance Framework,Internal / Regulatory Policy,"Sanctions, restricted-party and unusual-risk screening obligations."
+FW_MAR,Market Abuse Surveillance Framework,Regulatory Policy,Market-abuse monitoring and alert-review governance context.

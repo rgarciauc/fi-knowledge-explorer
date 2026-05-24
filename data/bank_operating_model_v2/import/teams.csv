@@ -1,0 +1,12 @@
+team_id,department_id,name,description,lead_employee_id,location,criticality
+T_PAY_IT,D_PAY_IT,IT Payments Team,"Creates, validates and sends payment instructions through SEPA and SWIFT channels.",E_PAY_LEAD,Frankfurt,Critical
+T_COMP_IT,D_COMP_IT,IT Compliance Team,"Operates sanctions, AML and market-abuse surveillance platforms and compliance decision integration.",E_COMP_IT_LEAD,Berlin,Critical
+T_SETTLE,D_SETTLE,Settlement & Reconciliation Team,Validates settled status and reconciles payment records to external movement.,E_SETTLE_LEAD,Frankfurt,Critical
+T_DATA,D_DATA,Data Integration Team,Runs Input Hub and maintains data pipelines and data quality for dependent systems.,E_DATA_LEAD,Berlin,High
+T_SERVICE,D_SUPPORT,IT Service Desk Team,Provides level 1 and level 2 user and system support to every operational team.,E_SERVICE_LEAD,Berlin,High
+T_TICKET,D_SUPPORT,Ticketing Systems Team,Owns and operates the Ticketing System used for incident and request tracking.,E_TICKET_LEAD,Berlin,High
+T_IAM,D_ID,Identity Management Team,"Controls identities, entitlements and permission lifecycle for all managed systems.",E_IAM_LEAD,Berlin,Critical
+T_INNOV,D_INNOV,I/D Investigation and Development Team,Explores opportunities and builds potential new systems and innovation prototypes.,E_INNOV_LEAD,Berlin,Medium
+T_REG,D_REG,EU Regulatory Oversight Team,Reviews ICT and processing activities for DORA and GDPR alignment.,E_REG_LEAD,Brussels,Critical
+T_PAY_BUS,D_PAY_BUS,Payments Business Ownership Team,Provides business ownership and approval policy for payment systems.,E_PAY_BUS_LEAD,Frankfurt,Critical
+T_COMP_BUS,D_COMP_BUS,Compliance Decision Team,"Owns sanctions, AML and market-abuse business decision frameworks.",E_COMP_BUS_LEAD,Berlin,Critical

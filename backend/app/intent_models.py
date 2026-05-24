@@ -1,24 +1,28 @@
 from typing import Any, Literal
-
 from pydantic import BaseModel, Field
-
 
 IntentName = Literal[
     "overview",
     "ownership_search",
-    "responsibilities_overview",
+    "system_owners",
     "employee_search",
+    "employee_responsibilities",
+    "department_employees",
+    "payment_flow",
+    "team_interactions",
     "process_pipeline",
     "next_step",
     "system_impact",
+    "support_coverage",
+    "access_governance",
+    "regulatory_oversight",
+    "data_lineage",
     "missing_owners",
     "kpis",
     "global_search",
-    "department_employees",
     "generated_read_query",
     "clarification_required",
 ]
-
 
 class EntityCandidate(BaseModel):
     label: str
@@ -26,7 +30,6 @@ class EntityCandidate(BaseModel):
     name: str
     score: float = Field(ge=0.0, le=1.0)
     description: str = ""
-
 
 class IntentDecision(BaseModel):
     intent: IntentName
@@ -36,19 +39,16 @@ class IntentDecision(BaseModel):
     corrected_question: str | None = None
     reason: str = Field(default="", max_length=600)
 
-
 class GeneratedQueryPlan(BaseModel):
     cypher: str
     parameters: dict[str, str | int | float | bool] = Field(default_factory=dict)
     confidence: float = Field(ge=0.0, le=1.0)
     rationale: str = Field(default="", max_length=600)
 
-
 class ValidationResult(BaseModel):
     valid: bool
     reasons: list[str] = Field(default_factory=list)
     safe_parameters: dict[str, Any] = Field(default_factory=dict)
-
 
 class QueryTrace(BaseModel):
     query_method: str

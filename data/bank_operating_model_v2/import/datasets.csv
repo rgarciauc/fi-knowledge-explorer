@@ -1,0 +1,5 @@
+dataset_id,name,description,classification,retention_policy
+DS_SANCTIONS,Sanctions and Restricted Parties Dataset,Normalised sanctions and restricted-party data used in payment screening.,Restricted,Regulatory retention
+DS_MARKET,Market Activity Surveillance Dataset,Normalised market-activity data used to identify potential abuse patterns.,Restricted,Regulatory retention
+DS_SETTLE,Settlement Confirmation Dataset,Settlement confirmation and account-movement evidence.,Confidential,Operational retention
+DS_PAYMENT_DECISION,Payment Compliance Decision Dataset,GO or NO-GO decision evidence and reason reference for payment release.,Restricted,Regulatory retention

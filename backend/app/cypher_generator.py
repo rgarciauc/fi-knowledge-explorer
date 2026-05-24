@@ -26,7 +26,8 @@ Strict requirements:
 - Return graph-display evidence using all exact aliases:
   source_id, source, target_id, target, relationship, source_type, target_type.
 - Use stable identifier fields appropriate for each label, for example system_id, process_id,
-  team_id, employee_id, department_id, pipeline_id, dataset_id, step_id or project_id.
+  team_id, employee_id, department_id, source_id, framework_id, control_id,
+  responsibility_id, pipeline_id, dataset_id, step_id or project_id.
 - Prefer one or more direct evidence paths instead of an unbounded broad scan.
 
 Question: {question}

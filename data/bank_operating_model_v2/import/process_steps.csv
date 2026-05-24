@@ -1,0 +1,28 @@
+step_id,process_id,sequence,name,description,decision_point
+STEP_PAY_01,BP_PAYMENT,1,Create payment instruction,IT Payments creates and validates an instruction for the correct payment channel.,No
+STEP_PAY_02,BP_PAYMENT,2,Submit for compliance screening,Payment instruction is provided to compliance controls before release.,No
+STEP_PAY_03,BP_PAYMENT,3,Compliance GO or NO-GO decision,Compliance reviews sanctions AML restricted-party and unusual-risk alerts.,Yes
+STEP_PAY_04,BP_PAYMENT,4,Release approved payment,IT Payments releases only GO-approved payment instructions.,Yes
+STEP_PAY_05,BP_PAYMENT,5,Settlement and reconciliation,Settlement team verifies actual settlement and record matching.,No
+STEP_PAY_06,BP_PAYMENT,6,Automatic payment status update,Payment core is updated automatically with settlement outcome.,No
+STEP_SCREEN_01,BP_SCREENING,1,Receive payment for screening,Compliance platform receives instruction from payment processing.,No
+STEP_SCREEN_02,BP_SCREENING,2,Run sanctions and AML controls,Screen against regulatory and risk data.,No
+STEP_SCREEN_03,BP_SCREENING,3,Return release decision,Return GO or NO-GO to IT Payments.,Yes
+STEP_MARKET_01,BP_MARKET,1,Ingest trading activity,Input Hub provides activity data to surveillance.,No
+STEP_MARKET_02,BP_MARKET,2,Detect surveillance alerts,Market-abuse patterns generate alert candidates.,No
+STEP_MARKET_03,BP_MARKET,3,Compliance review alert,Compliance decides investigation outcome.,Yes
+STEP_SETTLE_01,BP_SETTLEMENT,1,Receive confirmation,Receive external settlement confirmation or account movement.,No
+STEP_SETTLE_02,BP_SETTLEMENT,2,Reconcile record,Compare internal record with external movement.,No
+STEP_SETTLE_03,BP_SETTLEMENT,3,Resolve settlement break,Investigate and document mismatches.,Yes
+STEP_DATA_01,BP_DATA,1,Obtain external source feed,Input Hub receives source data.,No
+STEP_DATA_02,BP_DATA,2,Validate data quality,Data Integration assures required quality.,Yes
+STEP_DATA_03,BP_DATA,3,Publish feed to consuming systems,Validated data is exposed to dependent platforms.,No
+STEP_ACCESS_01,BP_ACCESS,1,Receive access request,Access request is recorded.,No
+STEP_ACCESS_02,BP_ACCESS,2,Approve permission,Identity Management validates entitlement.,Yes
+STEP_ACCESS_03,BP_ACCESS,3,Provision and review access,Identity Manager provisions and retains evidence.,No
+STEP_SUPPORT_01,BP_SUPPORT,1,Create service ticket,Team member records issue in Ticketing System.,No
+STEP_SUPPORT_02,BP_SUPPORT,2,Triage level 1 or level 2,Service Desk assesses and routes ticket.,Yes
+STEP_SUPPORT_03,BP_SUPPORT,3,Resolve and close ticket,Resolution is documented.,No
+STEP_REG_01,BP_REG,1,Review system and team dependency,EU Regulatory Office examines ICT and processing landscape.,No
+STEP_REG_02,BP_REG,2,Map applicable obligation,Identify DORA or GDPR applicability.,No
+STEP_REG_03,BP_REG,3,Record oversight finding,Track required remediation or assurance evidence.,Yes

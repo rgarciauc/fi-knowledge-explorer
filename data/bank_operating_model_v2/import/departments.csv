@@ -1,0 +1,11 @@
+department_id,name,description,criticality,status
+D_PAY_IT,IT Payments Department,"Owns and operates payment technology channels, orchestration and release controls.",Critical,Active
+D_COMP_IT,IT Compliance Department,"Operates compliance technology for sanctions, AML and market-abuse surveillance.",Critical,Active
+D_SETTLE,Settlement & Reconciliation Department,Verifies settlement completion and reconciles internal records to external confirmations.,Critical,Active
+D_DATA,Data Integration Department,"Maintains external-data ingestion, lineage and quality services for consuming systems.",High,Active
+D_SUPPORT,IT Support Department,Provides service desk and ticketing-platform support services.,High,Active
+D_ID,Identity & Access Management Department,"Manages identity lifecycle, access permissions and privileged access controls.",Critical,Active
+D_INNOV,Innovation & Development Department,Investigates opportunities and develops candidate technology capabilities.,Medium,Active
+D_REG,EU Regulatory Office,Monitors regulatory obligations including DORA and GDPR across teams and systems.,Critical,Active
+D_PAY_BUS,Payments Business Department,"Owns payment business outcomes, release policy and operational service accountability.",Critical,Active
+D_COMP_BUS,Compliance Business Department,Owns financial-crime and market-conduct decision policy.,Critical,Active

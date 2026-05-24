@@ -1,0 +1,11 @@
+team_id,system_id,management_role
+T_PAY_IT,SYS_SEPA,Technology operation
+T_PAY_IT,SYS_SWIFT,Technology operation
+T_PAY_IT,SYS_PAYMENT_CORE,Technology operation
+T_COMP_IT,SYS_SANCTIONS,Technology operation
+T_COMP_IT,SYS_MARKET,Technology operation
+T_SETTLE,SYS_SETTLE,Technology operation
+T_TICKET,SYS_TICKET,Technology operation
+T_IAM,SYS_IDM,Technology operation
+T_DATA,SYS_INPUT,Technology operation
+T_INNOV,SYS_INNOV,Technology operation
