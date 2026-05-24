@@ -130,8 +130,13 @@ def answer_question(question: str) -> dict[str, Any]:
     catalog = _catalog()
     decision, candidates = detect_intent(question, catalog)
     selected_candidate = best_candidate_for_intent(decision.intent, candidates)
+    # Department staffing queries intentionally retain a broad term such as
+    # "compliance" so both Compliance Department IT and Business are included.
+    # Other entity-specific templates can resolve to one best entity name.
     resolved_term = (
-        selected_candidate.name if selected_candidate and decision.intent in TERM_INTENTS
+        decision.term
+        if decision.intent == "department_employees"
+        else selected_candidate.name if selected_candidate and decision.intent in TERM_INTENTS
         else decision.term
     )
 

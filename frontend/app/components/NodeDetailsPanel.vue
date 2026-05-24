@@ -18,6 +18,13 @@
     </div>
 
     <template v-else>
+      <div v-if="details" class="resolution">
+        <span v-if="details.stable_id">Stored ID: {{ details.stable_id }}</span>
+        <span v-if="details.matched_by === 'stable_id'" class="ok">Resolved by stable ID</span>
+        <span v-else-if="details.matched_by === 'exact_name_fallback'" class="fallback">
+          Resolved from graph display name
+        </span>
+      </div>
       <p class="summary">{{ nodeSummary(node, details) }}</p>
       <dl v-if="properties.length" class="property-grid">
         <template v-for="property in properties" :key="property.key">
@@ -58,6 +65,10 @@ const properties = computed(() => {
 .node-dot { height: 14px; width: 14px; margin-top: 7px; border-radius: 50%; box-shadow: 0 0 13px currentColor; }
 .node-heading h2 { font-size: 1.12rem; margin: 0 0 4px; color: #edf4fc; }
 .node-heading .muted { margin: 0; }
+.resolution { display:flex; flex-wrap:wrap; gap:7px; margin:17px 0 0; }
+.resolution span { padding:5px 9px; border-radius:999px; background:#102138; color:#93abc5; font-size:.72rem; }
+.resolution .ok { color:#84f0c5; background:rgba(45,212,191,.14); border:1px solid rgba(45,212,191,.24); }
+.resolution .fallback { color:#fde68a; background:rgba(250,204,21,.12); border:1px solid rgba(250,204,21,.22); }
 .summary { margin: 18px 0; line-height: 1.55; color: #c1d0e2; }
 .property-grid { display: grid; grid-template-columns: minmax(95px, .8fr) 1.4fr; gap: 9px 12px; margin: 18px 0 0; padding-top: 13px; border-top: 1px solid #182d47; font-size: .8rem; }
 .property-grid dt { text-transform: capitalize; color: #7089a7; }

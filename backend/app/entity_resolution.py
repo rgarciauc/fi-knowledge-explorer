@@ -90,6 +90,7 @@ def best_candidate_for_intent(intent: str, candidates: list[EntityCandidate]) ->
         "next_step": {"ProcessStep"},
         "employee_search": {"Employee"},
         "ownership_search": {"System", "BusinessProcess"},
+        "department_employees": {"Department"},
     }
     labels = label_by_intent.get(intent)
     for candidate in candidates:

@@ -165,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue"
+import { computed, nextTick, ref, watch } from "vue"
 import { VEdgeLabel, VNetworkGraph } from "v-network-graph"
 import * as vNG from "v-network-graph"
 import { ForceLayout, type ForceEdgeDatum, type ForceNodeDatum } from "v-network-graph/lib/force-layout"
@@ -217,8 +217,9 @@ const layoutDirty = computed(
 
 function forceLayout() {
   return new ForceLayout({
-    positionFixedByDrag: false,
-    positionFixedByClickWithAltKey: true,
+    positionFixedByDrag: true,
+    positionFixedByClickWithAltKey: false,
+    noAutoRestartSimulation: true,
     createSimulation: (d3, nodes, edges) => {
       const link = d3
         .forceLink<ForceNodeDatum, ForceEdgeDatum>(edges)
@@ -226,13 +227,16 @@ function forceLayout() {
         .distance(appliedLinkDistance.value)
         .strength(0.62)
 
+      // Pre-calculate coordinates before display. This makes fit-content
+      // reliable because the graph is no longer expanding after it is fitted.
       return d3
         .forceSimulation(nodes)
         .force("edge", link)
         .force("charge", d3.forceManyBody().strength(appliedChargeStrength.value))
         .force("collide", d3.forceCollide().radius(34).strength(0.72))
         .force("center", d3.forceCenter().strength(0.06))
-        .alphaMin(0.002)
+        .stop()
+        .tick(180)
     },
   })
 }
@@ -245,7 +249,7 @@ function forceLayout() {
 const configs = computed(() =>
   vNG.defineConfigs({
     view: {
-      autoPanAndZoomOnLoad: "fit-content",
+      autoPanAndZoomOnLoad: autoFitEnabled.value ? "fit-content" : undefined,
       mouseWheelZoomEnabled: wheelZoomEnabled.value,
       doubleClickZoomEnabled: false,
       layoutHandler: forceLayout(),
@@ -419,32 +423,12 @@ function hover(nodeKey: string | null) {
   emit("hover", nodeKey)
 }
 
-let fitTimers: Array<ReturnType<typeof setTimeout>> = []
-
-function clearScheduledFit() {
-  for (const timer of fitTimers) clearTimeout(timer)
-  fitTimers = []
-}
-
-function scheduleFit() {
-  if (!autoFitEnabled.value) return
-  clearScheduledFit()
-  nextTick(() => {
-    graph.value?.fitToContents()
-    // A force simulation continues to reposition nodes after initial render.
-    // Re-fit briefly while it settles so the full graph is visible by default.
-    for (const delay of [120, 360, 900]) {
-      fitTimers.push(setTimeout(() => graph.value?.fitToContents(), delay))
-    }
-  })
-}
-
 function applyLayout() {
   appliedLinkDistance.value = linkDistance.value
   appliedChargeStrength.value = chargeStrength.value
   layouts.value = { nodes: {} }
+  // A new graph instance recalculates stable coordinates, then fits content on load.
   layoutRevision.value += 1
-  scheduleFit()
 }
 
 function resetLayout() {
@@ -454,7 +438,6 @@ function resetLayout() {
 }
 
 function fitGraph() {
-  clearScheduledFit()
   graph.value?.fitToContents()
 }
 
@@ -468,12 +451,8 @@ function zoomOut() {
 
 watch(
   autoFitEnabled,
-  enabled => {
-    if (enabled) scheduleFit()
-  },
+  () => applyLayout(),
 )
-
-onBeforeUnmount(clearScheduledFit)
 
 watch(
   () => props.selectedKey,
@@ -486,6 +465,7 @@ watch(
 watch(
   () => Object.keys(props.nodes).join("|") + Object.keys(props.edges).join("|"),
   () => nextTick(applyLayout),
+  { immediate: true },
 )
 
 watch(

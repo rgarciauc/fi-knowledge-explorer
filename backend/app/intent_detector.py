@@ -164,7 +164,10 @@ def detect_intent(question: str, catalog: list[dict]) -> tuple[IntentDecision, l
         llm_decision = _llm_decision(question, candidates)
         if llm_decision and llm_decision.confidence >= settings.intent_confidence_threshold:
             matched = best_candidate_for_intent(llm_decision.intent, candidates)
-            if matched and llm_decision.intent not in {"global_search", "generated_read_query"}:
+            if llm_decision.intent == "department_employees":
+                llm_decision.term = _department_search_term(question, candidates)
+                llm_decision.target_label = "Department"
+            elif matched and llm_decision.intent not in {"global_search", "generated_read_query"}:
                 llm_decision.term = matched.name
                 llm_decision.target_label = matched.label
             logger.info(

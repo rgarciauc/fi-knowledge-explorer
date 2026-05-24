@@ -14,6 +14,8 @@ export type GraphEdge = {
 
 export type NodeDetails = {
   labels?: string[]
+  stable_id?: string
+  matched_by?: "stable_id" | "exact_name_fallback"
   properties?: Record<string, unknown>
   relationships?: Array<Record<string, unknown>>
   error?: string
