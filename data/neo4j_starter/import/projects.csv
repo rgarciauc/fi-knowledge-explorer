@@ -1,0 +1,31 @@
+project_id,name,sponsoring_department_id,owning_team_id,project_manager_employee_id,description,status,priority,related_system_ids,start_date,target_end_date
+P001,EMBARGO Rule Optimization,D001,T001,E002,Improve sanctions matching rules and reduce false positives.,In Progress,High,S001;S010,2026-01-15,2026-12-15
+P002,Compliance Data Quality Dashboard,D001,T001,E003,Create dashboard for sanctions and KYC data quality metrics.,In Progress,High,S001;S003;S010,2026-01-15,2026-12-15
+P003,KYC Workflow API Integration,D001,T001,E002,Integrate KYC360 with DataHub APIs and standard events.,Planned,Medium,S003;S010,2026-01-15,2026-12-15
+P004,AML Case Evidence Automation,D002,T002,E006,Automate AML evidence packages for audit and regulators.,In Progress,High,S004;S010;S006,2026-01-15,2026-12-15
+P005,Sanctions Escalation Playbook,D002,T002,E007,Standardize sanctions escalation and legal review triggers.,In Progress,High,S001;S004;S007,2026-01-15,2026-12-15
+P006,KYC Refresh Backlog Reduction,D002,T002,E008,Reduce overdue KYC reviews and improve ownership visibility.,In Progress,High,S003,2026-01-15,2026-12-15
+P007,Role Catalog Cleanup,D003,T003,E011,Clean HR role catalog and align managers to departments.,In Progress,Medium,S005,2026-01-15,2026-12-15
+P008,Mandatory Compliance Training Rollout,D003,T003,E012,Roll out annual compliance and sanctions training.,Planned,Medium,S005,2026-01-15,2026-12-15
+P009,Onboarding Task Automation,D003,T003,E010,Automate onboarding checklists and system access handoffs.,In Progress,Medium,S005;S009,2026-01-15,2026-12-15
+P010,2026 Audit Plan Digitization,D004,T004,E014,Digitize audit plan templates and evidence standards.,In Progress,High,S006,2026-01-15,2026-12-15
+P011,IT General Controls Testing,D004,T004,E015,"Test access, change and operations controls for critical applications.",In Progress,High,S001;S002;S010;S006,2026-01-15,2026-12-15
+P012,Process Control Mapping,D004,T004,E016,Map key controls to bank processes and owners.,Planned,High,S006;S010,2026-01-15,2026-12-15
+P013,Payment Exception Workflow Upgrade,D005,T005,E018,Improve payment exception handling and SLA reporting.,In Progress,High,S002;S009,2026-01-15,2026-12-15
+P014,SEPA Batch Monitoring,D005,T005,E019,Add real-time monitoring for SEPA batch status and rejects.,In Progress,High,S002;S010,2026-01-15,2026-12-15
+P015,SWIFT Message Repair Queue,D005,T005,E020,Create controlled repair queue for SWIFT message errors.,Planned,High,S002,2026-01-15,2026-12-15
+P016,Vendor Contract Repository Cleanup,D006,T006,E023,Clean up vendor contracts and link obligations to systems.,In Progress,Medium,S007,2026-01-15,2026-12-15
+P017,Regulatory Legal Opinion Library,D006,T006,E022,Create searchable library of regulatory legal opinions.,Planned,Medium,S007,2026-01-15,2026-12-15
+P018,Payment Legal Review Workflow,D006,T006,E022,Formalize payment issue legal review and evidence trail.,In Progress,High,S002;S007,2026-01-15,2026-12-15
+P019,Month-End Close Checklist,D007,T007,E025,Standardize internal accounting month-end close workflow.,In Progress,Medium,S008,2026-01-15,2026-12-15
+P020,Cost Center Reconciliation Automation,D007,T007,E026,Automate recurring cost center reconciliations.,Planned,Medium,S008;S010,2026-01-15,2026-12-15
+P021,Ledger Evidence Archiving,D007,T007,E025,Archive journal and reconciliation evidence for audit access.,In Progress,Medium,S008;S006,2026-01-15,2026-12-15
+P022,Service Desk Knowledge Base,D008,T008,E028,Improve support articles and ticket resolution guidance.,In Progress,Medium,S009,2026-01-15,2026-12-15
+P023,Access Request Triage Rules,D008,T008,E030,Define access request routing and approval validation rules.,In Progress,High,S009;S005,2026-01-15,2026-12-15
+P024,Laptop Provisioning Improvements,D008,T008,E029,Reduce delays in device provisioning for new joiners.,Planned,Medium,S009;S005,2026-01-15,2026-12-15
+P025,Enterprise Responsibility Graph MVP,D001,T001,E001,Create Neo4j graph MVP for ownership transparency.,In Progress,High,S010,2026-01-15,2026-12-15
+P026,Critical System Impact Map,D004,T004,E015,"Map processes, projects and controls affected by system outages.",Planned,High,S001;S002;S010;S006,2026-01-15,2026-12-15
+P027,Payment Sanctions Pre-Check,D005,T005,E018,Ensure all outgoing payments pass pre-check against EMBARGO.,In Progress,Critical,S001;S002,2026-01-15,2026-12-15
+P028,HR to Access Data Feed,D003,T003,E011,Improve HRCore feed to ServiceDeskPro for joiner/mover/leaver events.,In Progress,High,S005;S009;S010,2026-01-15,2026-12-15
+P029,Audit Remediation Reporting,D004,T004,E014,Create remediation status reporting across departments.,In Progress,High,S006;S010,2026-01-15,2026-12-15
+P030,Legal Hold Process for Investigations,D006,T006,E021,Define legal hold process for AML and audit investigations.,Planned,High,S004;S006;S007,2026-01-15,2026-12-15

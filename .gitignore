@@ -1,0 +1,77 @@
+# OS / Editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+.Python
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+dist/
+build/
+*.egg-info/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Node / Nuxt
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+.nuxt/
+.output/
+.nitro/
+.cache/
+*.tsbuildinfo
+
+# Frontend artifacts
+frontend/node_modules/
+frontend/.nuxt/
+frontend/.output/
+
+# Docker / local runtime
+docker-compose.override.yml
+
+# Neo4j local persistence and logs
+neo4j/data/
+neo4j/logs/
+
+# Test and local temp artifacts
+tmp/
+temp/
+*.tmp
+
+# Helper script
+merge_project_files.sh
+project_merged_content.txt

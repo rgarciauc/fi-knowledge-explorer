@@ -1,0 +1,14 @@
+responsibility_id,name,category,description
+R001,Maintain employee master data,BUSINESS,Maintain authoritative workforce records
+R002,Approve privileged access,CONTROL,Approve elevated access requests
+R003,Decide sanctions alerts,BUSINESS,Review and disposition sanctions alerts
+R004,Operate sanctions screening rules,IT,Maintain screening rules and availability
+R005,Own payment operations policy,BUSINESS,Set payment execution procedures
+R006,Own payment hub reliability,IT,Maintain payment hub service reliability
+R007,Coordinate major incidents,IT,Coordinate restoration and communications
+R008,Challenge operational controls,RISK,Assess design and performance of controls
+R009,Investigate AML cases,BUSINESS,Collect evidence and close cases
+R010,Maintain SWIFT connectivity,IT,Operate external payment gateway connectivity
+R011,Run daily reconciliation,BUSINESS,Identify and resolve unsettled payments
+R012,Maintain access reviews,CONTROL,Operate recurring user access certification
+R013,Maintain case workflow,IT,Support case investigation workflow tooling

@@ -1,0 +1,13 @@
+pipeline_id,name,source_system_id,target_dataset_id,target_platform_system_id,frequency,owner_team_id,status,criticality
+PL001,Sanctions Reference Load,S001,DS001,S010,Daily,T001,Active,Medium
+PL002,KYC Profile Export,S003,DS002,S010,Hourly,T001,Active,High
+PL003,AML Case Evidence Extract,S004,DS003,S010,Daily,T002,Active,Medium
+PL004,Payment Instruction Feed,S002,DS004,S010,Real-time,T005,Active,High
+PL005,Payment Exception Feed,S002,DS005,S010,Hourly,T005,Active,High
+PL006,HR Employee Master Feed,S005,DS006,S010,Daily,T003,Active,Medium
+PL007,Training Status Feed,S005,DS007,S010,Daily,T003,Active,Medium
+PL008,Audit Evidence Export,S006,DS008,S010,On demand,T004,Active,Medium
+PL009,Audit Finding Export,S006,DS009,S010,Daily,T004,Active,Medium
+PL010,Legal Contract Metadata Sync,S007,DS010,S010,Daily,T006,Active,Medium
+PL011,Accounting Ledger Extract,S008,DS012,S010,Daily,T007,Active,Medium
+PL012,Service Desk Ticket Feed,S009,DS014,S010,Hourly,T008,Active,High

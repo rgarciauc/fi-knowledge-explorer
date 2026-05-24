@@ -1,0 +1,8 @@
+department_id,name,code,purpose
+D_HR,Human Resources,HR,People operations and workforce governance
+D_COMP_IT,Compliance IT,COMPLIANCE_IT,Technology supporting regulatory controls
+D_COMP_BUS,Compliance Business,COMPLIANCE_BUSINESS,AML sanctions and regulatory decision making
+D_PAY_BUS,Payment Business,PAYMENT_BUSINESS,Payment product and operations ownership
+D_PAY_IT,Payment IT,PAYMENT_IT,Payment systems delivery and reliability
+D_RISK,Operational Risk,RISK,Operational risk oversight
+D_SEC,Information Security,INFOSEC,Identity and technology security

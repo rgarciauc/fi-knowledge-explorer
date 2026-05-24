@@ -1,0 +1,20 @@
+step_id,process_id,step_no,name,sla_hours,description
+PS_J01,P_JOIN,1,Register employee,8,Create HR master record
+PS_J02,P_JOIN,2,Request role access,4,Submit required access profiles
+PS_J03,P_JOIN,3,Approve privileged roles,8,Obtain approval for privileged access
+PS_J04,P_JOIN,4,Provision access,4,Create access assignments
+PS_P01,P_PAY,1,Receive payment order,1,Capture customer or internal payment
+PS_P02,P_PAY,2,Screen beneficiary,1,Apply sanctions screening
+PS_P03,P_PAY,3,Release clean payment,1,Release cleared order
+PS_P04,P_PAY,4,Transmit payment,1,Send external message
+PS_P05,P_PAY,5,Post ledger entry,2,Record financial entry
+PS_A01,P_ALERT,1,Create alert case,1,Open alert case
+PS_A02,P_ALERT,2,Investigate match,8,Assess customer and counterparty
+PS_A03,P_ALERT,3,Decide disposition,4,Release block or escalate
+PS_I01,P_INC,1,Detect outage,1,Detect critical degradation
+PS_I02,P_INC,2,Assess business impact,1,Identify affected processes
+PS_I03,P_INC,3,Restore service,2,Recover critical service
+PS_I04,P_INC,4,Perform post incident review,24,Record corrective actions
+PS_R01,P_REC,1,Extract transactions,2,Extract payment records
+PS_R02,P_REC,2,Match ledger entries,4,Match executions to ledger
+PS_R03,P_REC,3,Resolve breaks,8,Investigate mismatches

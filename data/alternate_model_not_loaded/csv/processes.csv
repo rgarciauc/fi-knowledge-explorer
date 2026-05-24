@@ -1,0 +1,6 @@
+process_id,name,category,criticality,description
+P_JOIN,Joiner Access Provisioning,HR_SECURITY,HIGH,Provision appropriate access for a new employee
+P_PAY,Outgoing Payment Execution,PAYMENTS,CRITICAL,Validate sanction-screen and send a payment
+P_ALERT,Sanctions Alert Investigation,COMPLIANCE,CRITICAL,Investigate a potential sanctions match
+P_INC,Critical System Incident Response,RESILIENCE,CRITICAL,Restore critical system service
+P_REC,Daily Payment Reconciliation,PAYMENTS,HIGH,Reconcile executed payments to ledger

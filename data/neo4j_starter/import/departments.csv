@@ -1,0 +1,9 @@
+department_id,name,description,criticality,head_employee_id,status
+D001,Compliance Department IT,"Technology ownership for compliance platforms, screening engines, workflow integrations and compliance data controls.",High,E001,Active
+D002,Compliance Department Business,"Business compliance operations for KYC, AML, sanctions, regulatory interpretation and policy execution.",High,E005,Active
+D003,Human Resources,"Employee lifecycle, role governance, training coordination, HR policy and internal mobility.",Medium,E009,Active
+D004,Audit,"Internal audit planning, process assurance, control testing and remediation tracking.",High,E013,Active
+D005,Payment,"Payment operations, transaction processing, reconciliation and payment service monitoring.",High,E017,Active
+D006,Legal,"Legal advisory, contract review, litigation coordination and regulatory legal interpretation.",High,E021,Active
+D007,Intern Accounting,"Internal accounting, cost allocation, month-end close and financial booking support.",Medium,E024,Active
+D008,IT Support Intern,"Internal IT support, employee device support, access support and service desk coordination.",Medium,E027,Active

@@ -1,0 +1,10 @@
+system_id,name,system_type,criticality,rto_hours,data_classification
+S_HRIS,HR Master,SaaS,MEDIUM,24,CONFIDENTIAL
+S_IAM,Identity Access Manager,Platform,HIGH,4,CONFIDENTIAL
+S_SCREEN,Sanctions Screening Engine,Application,CRITICAL,1,CONFIDENTIAL
+S_CASE,Compliance Case Manager,Application,HIGH,4,CONFIDENTIAL
+S_PAYMENT,Payment Hub,Application,CRITICAL,1,CONFIDENTIAL
+S_SWIFT,SWIFT Gateway,Gateway,CRITICAL,1,RESTRICTED
+S_CORE,Core Banking Ledger,Core,CRITICAL,1,RESTRICTED
+S_MON,Enterprise Monitoring,Platform,HIGH,2,INTERNAL
+S_DWH,Regulatory Data Warehouse,Data,HIGH,8,CONFIDENTIAL

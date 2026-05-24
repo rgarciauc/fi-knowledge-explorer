@@ -1,0 +1,10 @@
+upstream_system_id,downstream_system_id,dependency_type,description
+S_IAM,S_HRIS,AUTHORIZATION,HR users authenticate via IAM
+S_PAYMENT,S_SCREEN,API,Payments must be screened before release
+S_PAYMENT,S_SWIFT,MESSAGE,Payment Hub sends outbound payment messages
+S_PAYMENT,S_CORE,POSTING,Payment Hub posts to ledger
+S_SCREEN,S_CASE,ALERT,Potential matches create cases
+S_DWH,S_PAYMENT,FEED,Regulatory warehouse consumes payment data
+S_DWH,S_CASE,FEED,Regulatory warehouse consumes case data
+S_MON,S_PAYMENT,TELEMETRY,Monitoring observes payment hub
+S_MON,S_SCREEN,TELEMETRY,Monitoring observes screening engine

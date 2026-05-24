@@ -1,0 +1,120 @@
+name: super-bank
+
+services:
+  neo4j:
+    image: neo4j:2026.04.0-community
+    container_name: super_bank_neo4j
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      NEO4J_AUTH: "neo4j/${NEO4J_PASSWORD:-SuperBank_ChangeMe_2026}"
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - ./data/neo4j_starter/import:/var/lib/neo4j/import
+    healthcheck:
+      test: ["CMD-SHELL", "cypher-shell -u neo4j -p \"$${NEO4J_AUTH#*/}\" 'RETURN 1;' >/dev/null 2>&1"]
+      interval: 10s
+      timeout: 10s
+      retries: 18
+      start_period: 20s
+
+  neo4j-import:
+    image: neo4j:2026.04.0-community
+    container_name: super_bank_neo4j_import
+    restart: "no"
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    volumes:
+      - ./data/neo4j_starter/cypher:/cypher:ro
+    entrypoint: ["cypher-shell"]
+    command:
+      - -a
+      - neo4j://neo4j:7687
+      - -u
+      - neo4j
+      - -p
+      - "${NEO4J_PASSWORD:-SuperBank_ChangeMe_2026}"
+      - -f
+      - /cypher/import.cypher
+
+  ollama:
+    image: ollama/ollama:latest
+    container_name: super_bank_ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 10s
+      retries: 18
+      start_period: 10s
+
+  ollama-init:
+    image: ollama/ollama:latest
+    container_name: super_bank_ollama_init
+    restart: "no"
+    depends_on:
+      ollama:
+        condition: service_healthy
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+      OLLAMA_MODEL: "${OLLAMA_MODEL:-llama3.2:3b}"
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["ollama pull \"$${OLLAMA_MODEL}\""]
+    volumes:
+      - ollama_data:/root/.ollama
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: super_bank_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      NEO4J_URI: neo4j://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: "${NEO4J_PASSWORD:-SuperBank_ChangeMe_2026}"
+      LLM_ENABLED: "${LLM_ENABLED:-true}"
+      LLM_URL: http://ollama:11434/api/generate
+      LLM_MODEL: "${OLLAMA_MODEL:-llama3.2:3b}"
+    depends_on:
+      neo4j-import:
+        condition: service_completed_successfully
+      ollama-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=4)"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: super_bank_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      NUXT_API_TARGET: http://backend:8000/api
+    depends_on:
+      backend:
+        condition: service_healthy
+
+volumes:
+  neo4j_data:
+  neo4j_logs:
+  ollama_data:

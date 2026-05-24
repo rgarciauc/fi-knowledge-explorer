@@ -1,0 +1,19 @@
+dataset_id,name,classification,source_system_id,description,retention_policy
+DS001,Sanctions List Snapshot,Restricted,S001,Daily copy of sanctions and embargo reference data,7 years
+DS002,Customer KYC Profile,Confidential,S003,Customer due diligence and risk profile data,7 years
+DS003,AML Alert Case File,Restricted,S004,AML alert investigation evidence and decision data,7 years
+DS004,Payment Instruction,Restricted,S002,Payment order and routing details,7 years
+DS005,Payment Exception Log,Confidential,S002,Rejected and repaired payment records,7 years
+DS006,Employee Master Record,Confidential,S005,"Employee, manager and role master data",7 years
+DS007,Training Completion Record,Internal,S005,Mandatory training status and completion evidence,3 years
+DS008,Audit Evidence Package,Confidential,S006,Evidence collected during audit testing,7 years
+DS009,Audit Finding Register,Confidential,S006,"Audit issues, owners and due dates",7 years
+DS010,Legal Contract Metadata,Confidential,S007,"Contract parties, clauses, dates and obligations",7 years
+DS011,Legal Opinion Archive,Confidential,S007,Legal advice and regulatory interpretations,7 years
+DS012,Ledger Journal Entry,Restricted,S008,Internal accounting journal records,7 years
+DS013,Cost Center Balance,Confidential,S008,Cost center balances and reconciliation status,7 years
+DS014,IT Ticket Record,Internal,S009,Service desk tickets and incident records,3 years
+DS015,Access Request Record,Confidential,S009,Access request workflow data and approvals,7 years
+DS016,Compliance Data Quality Metrics,Internal,S010,Measured completeness and validity metrics,3 years
+DS017,Responsibility Graph Extract,Internal,S010,Graph-ready ownership and dependency data,3 years
+DS018,System Criticality Register,Internal,S010,"System owners, criticalities and process dependencies",3 years

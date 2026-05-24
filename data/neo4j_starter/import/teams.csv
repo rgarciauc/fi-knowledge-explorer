@@ -1,0 +1,9 @@
+team_id,department_id,name,description,team_lead_employee_id,location,criticality
+T001,D001,Compliance Platforms Team,"Maintains EMBARGO, KYC workflow integrations and compliance platform availability.",E002,HQ-Berlin,High
+T002,D002,AML & Sanctions Operations Team,"Performs alerts review, case investigations, sanctions escalation and regulatory evidence collection.",E006,HQ-Berlin,High
+T003,D003,People Operations Team,"Handles onboarding, role changes, training assignments and HR records quality.",E010,HQ-Berlin,Medium
+T004,D004,Internal Audit Execution Team,"Executes audit engagements, validates evidence and tracks remediation actions.",E014,HQ-Berlin,High
+T005,D005,Payment Processing Team,"Runs SEPA/SWIFT operations, payment exception handling and reconciliation.",E018,Frankfurt-Ops,High
+T006,D006,Legal Advisory Team,"Supports contracts, legal opinions, regulatory interpretation and issue escalation.",E022,HQ-Berlin,High
+T007,D007,Internal Accounting Operations Team,"Executes month-end close, account reconciliation, cost center controls and finance reporting support.",E025,Frankfurt-Finance,Medium
+T008,D008,Internal IT Service Desk Team,"Provides level-1/2 support, access ticket triage, device management and incident routing.",E028,HQ-Berlin,Medium

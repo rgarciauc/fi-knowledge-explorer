@@ -1,0 +1,7 @@
+control_id,name,frequency,control_type,description
+C_ACCESS,Privileged access approval,PER_REQUEST,PREVENTIVE,Dual approval for privileged access
+C_SCREEN,Real-time sanctions screening,REAL_TIME,PREVENTIVE,Payment sanctions screening before release
+C_CASE_QA,Case decision four-eyes review,PER_CASE,DETECTIVE,Second review for high-risk decisions
+C_MON,Critical availability monitoring,REAL_TIME,DETECTIVE,Monitor critical system uptime
+C_REC,Daily payment reconciliation,DAILY,DETECTIVE,Compare payment and ledger records
+C_PIR,Post-incident review,PER_INCIDENT,CORRECTIVE,Track root cause actions

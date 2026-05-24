@@ -1,0 +1,9 @@
+team_id,department_id,name,purpose
+T_HR_OPS,D_HR,HR Operations,Employee lifecycle administration
+T_IAM,D_SEC,Identity and Access,Access control and reviews
+T_AML_ANALYST,D_COMP_BUS,AML Investigation,Alert review and case resolution
+T_COMP_PLATFORM,D_COMP_IT,Compliance Platform,Screening and case applications
+T_PAY_OPS,D_PAY_BUS,Payment Operations,Execute and reconcile payments
+T_PAY_PLATFORM,D_PAY_IT,Payment Platform,Payment hub and gateways
+T_SRE,D_PAY_IT,Reliability Engineering,Monitoring and incident recovery
+T_OP_RISK,D_RISK,Operational Risk Oversight,Control monitoring and risk challenge

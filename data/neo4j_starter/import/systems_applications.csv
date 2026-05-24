@@ -1,0 +1,11 @@
+system_id,name,type,owner_team_id,description,criticality,data_classification
+S001,EMBARGO,Sanctions Screening,T001,Screens customers and payments against sanctions and embargo lists.,Critical,Confidential
+S002,PaymentSystem,Payment Processing,T005,Core engine for SEPA and SWIFT payment processing.,Critical,Restricted
+S003,KYC360,KYC Workflow,T002,Customer due diligence and periodic KYC refresh workflow.,High,Confidential
+S004,AMLCaseManager,Case Management,T002,AML alert investigation and suspicious activity case documentation.,High,Restricted
+S005,HRCore,HR Information System,T003,"Employee master data, role catalog and training assignment source.",Medium,Confidential
+S006,AuditTrack,Audit Management,T004,"Audit plan, evidence, findings and remediation tracking.",High,Confidential
+S007,LegalVault,Legal Document Management,T006,"Legal contracts, opinions and matter documentation.",High,Confidential
+S008,AccountingLedger,Internal Ledger,T007,Internal accounting ledger and cost center booking records.,High,Restricted
+S009,ServiceDeskPro,ITSM,T008,"IT tickets, service requests, incidents and support knowledge base.",Medium,Internal
+S010,DataHub,Enterprise Data Platform,T001,"Shared data platform for controlled extracts, datasets and reporting pipelines.",Critical,Restricted

@@ -1,0 +1,6 @@
+risk_id,name,risk_category,severity,description
+K_ACCESS,Excessive access risk,SECURITY,HIGH,Inappropriate access to sensitive bank capabilities
+K_SANCTIONS,Sanctions breach risk,COMPLIANCE,CRITICAL,Executing payments involving sanctioned parties
+K_OUTAGE,Payment service outage,RESILIENCE,CRITICAL,Critical payment processing interruption
+K_LEDGER,Ledger mismatch,OPERATIONS,HIGH,Payments not accurately booked
+K_CASE,Incorrect alert disposition,COMPLIANCE,HIGH,Case closed without sufficient evidence

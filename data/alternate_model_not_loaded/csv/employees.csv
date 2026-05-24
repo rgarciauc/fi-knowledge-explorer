@@ -1,0 +1,15 @@
+employee_id,team_id,name,title,email,status
+E001,T_HR_OPS,Anna Fischer,HR Operations Lead,anna.fischer@superbank.demo,ACTIVE
+E002,T_IAM,Karim Haddad,IAM Product Owner,karim.haddad@superbank.demo,ACTIVE
+E003,T_AML_ANALYST,Clara Nguyen,Head of AML Investigations,clara.nguyen@superbank.demo,ACTIVE
+E004,T_AML_ANALYST,Lukas Weber,Sanctions Analyst,lukas.weber@superbank.demo,ACTIVE
+E005,T_COMP_PLATFORM,Marta Silva,Compliance IT Lead,marta.silva@superbank.demo,ACTIVE
+E006,T_COMP_PLATFORM,Rafael Costa,Case Management Engineer,rafael.costa@superbank.demo,ACTIVE
+E007,T_PAY_OPS,Julia König,Head of Payment Operations,julia.koenig@superbank.demo,ACTIVE
+E008,T_PAY_OPS,Sofia Rossi,Payment Operations Specialist,sofia.rossi@superbank.demo,ACTIVE
+E009,T_PAY_PLATFORM,David Stein,Payment IT Product Owner,david.stein@superbank.demo,ACTIVE
+E010,T_PAY_PLATFORM,Mei Chen,Integration Engineer,mei.chen@superbank.demo,ACTIVE
+E011,T_SRE,Noah Becker,SRE Lead,noah.becker@superbank.demo,ACTIVE
+E012,T_OP_RISK,Elena García,Operational Risk Manager,elena.garcia@superbank.demo,ACTIVE
+E013,T_COMP_PLATFORM,Omar Said,Screening Engineer,omar.said@superbank.demo,ACTIVE
+E014,T_IAM,Laura Vogel,Access Analyst,laura.vogel@superbank.demo,ACTIVE

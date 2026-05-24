@@ -1,0 +1,17 @@
+process_id,name,owner_department_id,owner_team_id,process_owner_employee_id,description,criticality,status
+BP001,Sanctions Screening,D002,T002,E007,Screen customers and transactions against embargo and sanctions lists.,Critical,Active
+BP002,KYC Customer Onboarding,D002,T002,E008,Perform customer due diligence before onboarding.,High,Active
+BP003,AML Alert Investigation,D002,T002,E006,Investigate AML alerts and document outcomes.,High,Active
+BP004,Payment Processing,D005,T005,E018,Process outgoing and incoming payments.,Critical,Active
+BP005,Payment Exception Handling,D005,T005,E019,"Resolve failed, rejected or suspicious payments.",High,Active
+BP006,Employee Onboarding,D003,T003,E010,"Create HR record, assign training and coordinate access/device setup.",Medium,Active
+BP007,Access Request Fulfillment,D008,T008,E030,Validate and route employee access requests.,High,Active
+BP008,IT Incident Management,D008,T008,E028,"Triage, resolve and escalate IT incidents.",Medium,Active
+BP009,Internal Audit Engagement,D004,T004,E014,Plan and execute internal audit engagements.,High,Active
+BP010,Control Remediation Tracking,D004,T004,E016,"Track control gaps, remediation owners and evidence.",High,Active
+BP011,Legal Contract Review,D006,T006,E023,Review vendor and business contracts.,Medium,Active
+BP012,Regulatory Legal Review,D006,T006,E022,Provide legal interpretation for regulatory issues.,High,Active
+BP013,Month-End Accounting Close,D007,T007,E025,Perform internal accounting close activities.,Medium,Active
+BP014,Cost Center Reconciliation,D007,T007,E026,Reconcile internal cost centers and resolve mismatches.,Medium,Active
+BP015,Compliance Platform Change,D001,T001,E002,Control releases and changes for compliance applications.,High,Active
+BP016,Compliance Data Quality Monitoring,D001,T001,E003,"Monitor completeness, validity and timeliness of compliance data.",High,Active

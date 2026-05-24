@@ -1,0 +1,31 @@
+employee_id,department_id,team_id,name,role,manager_employee_id,task_summary,employment_type,location,status
+E001,D001,T001,Marta Stein,Head of Compliance IT,,Own compliance technology roadmap; approve platform changes; sponsor data control remediation,Permanent,Berlin,Active
+E002,D001,T001,Lukas Weber,Compliance Platform Lead,E001,Coordinate EMBARGO releases; manage platform backlog; review incidents,Permanent,Berlin,Active
+E003,D001,T001,Amira Haddad,Compliance Data Engineer,E002,Maintain sanctions data pipelines; monitor data quality; prepare pipeline evidence,Permanent,Berlin,Active
+E004,D001,T001,Jonas Richter,Application Support Analyst,E002,Resolve compliance app tickets; maintain runbooks; perform access checks,Permanent,Berlin,Active
+E005,D002,T002,Sofia Keller,Head of Compliance Business,,Own AML/KYC operations; define compliance policies; approve escalations,Permanent,Berlin,Active
+E006,D002,T002,Nina Bauer,AML Operations Lead,E005,Prioritize AML cases; allocate investigation workload; validate case closure,Permanent,Berlin,Active
+E007,D002,T002,Thomas Vogel,Sanctions Specialist,E006,Review sanctions alerts; document escalations; maintain blocked-party evidence,Permanent,Berlin,Active
+E008,D002,T002,Elena Rossi,KYC Analyst,E006,Perform KYC refresh; review beneficial ownership; update customer risk ratings,Permanent,Berlin,Active
+E009,D003,T003,Katharina Braun,Head of Human Resources,,Own HR governance; approve role catalog; monitor training compliance,Permanent,Berlin,Active
+E010,D003,T003,Markus Wolf,People Operations Lead,E009,Coordinate onboarding; manage HR tickets; align training assignments,Permanent,Berlin,Active
+E011,D003,T003,Priya Nair,HR Data Specialist,E010,Maintain employee master data; reconcile role changes; produce HR reports,Permanent,Berlin,Active
+E012,D003,T003,Daniel Klein,Learning Coordinator,E010,Assign compliance training; track overdue courses; support audit evidence,Permanent,Berlin,Active
+E013,D004,T004,Julia Schneider,Head of Internal Audit,,Approve audit plan; escalate control gaps; report audit outcomes,Permanent,Berlin,Active
+E014,D004,T004,Oskar Fischer,Audit Manager,E013,Lead audit engagements; assign testing work; review findings,Permanent,Berlin,Active
+E015,D004,T004,Lea Hoffmann,IT Auditor,E014,Test IT controls; review access evidence; assess system change logs,Permanent,Berlin,Active
+E016,D004,T004,Ahmed Mansour,Process Auditor,E014,Test process controls; validate remediation; interview process owners,Permanent,Berlin,Active
+E017,D005,T005,Peter Wagner,Head of Payments,,Own payment operations; approve payment controls; oversee critical incidents,Permanent,Frankfurt,Active
+E018,D005,T005,Mehmet Yilmaz,Payment Operations Lead,E017,Coordinate daily payment runs; manage exceptions; approve reconciliation,Permanent,Frankfurt,Active
+E019,D005,T005,Sarah Neumann,SEPA Specialist,E018,Monitor SEPA batches; resolve rejects; verify settlement reports,Permanent,Frankfurt,Active
+E020,D005,T005,Ivan Petrov,SWIFT Operations Analyst,E018,Monitor SWIFT messages; triage payment errors; document investigations,Permanent,Frankfurt,Active
+E021,D006,T006,Clara Meier,General Counsel,,Own legal risk oversight; approve legal opinions; advise executive issues,Permanent,Berlin,Active
+E022,D006,T006,Felix Hartmann,Legal Advisory Lead,E021,Review contracts; coordinate regulatory legal advice; manage legal workload,Permanent,Berlin,Active
+E023,D006,T006,Laura Becker,Contract Lawyer,E022,Draft contract clauses; review vendor terms; maintain legal evidence,Permanent,Berlin,Active
+E024,D007,T007,Martin Schulz,Head of Internal Accounting,,Own internal accounting controls; approve month-end close; review reconciliations,Permanent,Frankfurt,Active
+E025,D007,T007,Greta Lang,Accounting Operations Lead,E024,Coordinate close tasks; assign reconciliations; review journal evidence,Permanent,Frankfurt,Active
+E026,D007,T007,Ben Hoff,Junior Accountant,E025,Prepare journal entries; reconcile cost centers; collect invoice evidence,Intern/Junior,Frankfurt,Active
+E027,D008,T008,Tobias Kruger,Head of Internal IT Support,,Own IT support service levels; approve support procedures; manage escalations,Permanent,Berlin,Active
+E028,D008,T008,Isabel Zimmer,Service Desk Lead,E027,Coordinate ticket queues; assign support work; maintain knowledge base,Permanent,Berlin,Active
+E029,D008,T008,Ravi Singh,Desktop Support Analyst,E028,Resolve device issues; prepare laptops; document support resolutions,Intern/Junior,Berlin,Active
+E030,D008,T008,Hannah Weiss,Access Support Analyst,E028,Triage access requests; validate approvals; update IAM tickets,Intern/Junior,Berlin,Active
