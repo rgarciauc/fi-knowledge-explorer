@@ -43,6 +43,7 @@ TERM_INTENTS = {
     "next_step",
     "system_impact",
     "global_search",
+    "department_employees",
 }
 
 TEMPLATE_INTENTS = {
@@ -55,6 +56,7 @@ TEMPLATE_INTENTS = {
     "system_impact",
     "missing_owners",
     "kpis",
+    "department_employees",
 }
 
 SCHEMA_PROMPT = """
@@ -101,7 +103,7 @@ Supported execution intents:
 - kpis: coverage or governance KPI summary.
 - responsibilities_overview: overview of responsibility/ownership links.
 - overview: general organization overview.
-- global_search: broad exploration around an entity or topic, such as everything related to payments.
+- department_employees: employees and teams working in a department.\n- global_search: broad exploration around an entity or topic, such as everything related to payments.
 - generated_read_query: a complex multi-hop question not answered by approved templates.
 - clarification_required: ambiguity remains after considering the supplied candidate entities.
 """.strip()

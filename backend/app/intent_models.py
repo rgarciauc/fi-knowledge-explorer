@@ -14,6 +14,7 @@ IntentName = Literal[
     "missing_owners",
     "kpis",
     "global_search",
+    "department_employees",
     "generated_read_query",
     "clarification_required",
 ]

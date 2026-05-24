@@ -7,6 +7,29 @@ the alternative Process/IT_OWNER_OF/BUSINESS_OWNER_OF/DEPENDS_ON model.
 
 QUERY_TEMPLATES = {
 
+    "department_employees": """
+        CALL {
+            MATCH (d:Department)-[:HAS_TEAM]->(t:Team)
+            WHERE toLower(d.name) CONTAINS toLower($term)
+               OR toLower(d.department_id) = toLower($term)
+            RETURN d.department_id AS source_id, d.name AS source,
+                   t.team_id AS target_id, t.name AS target,
+                   'HAS_TEAM' AS relationship,
+                   'Department' AS source_type, 'Team' AS target_type
+            UNION ALL
+            MATCH (d:Department)-[:HAS_TEAM]->(t:Team)-[:HAS_EMPLOYEE]->(e:Employee)
+            WHERE toLower(d.name) CONTAINS toLower($term)
+               OR toLower(d.department_id) = toLower($term)
+            RETURN t.team_id AS source_id, t.name AS source,
+                   e.employee_id AS target_id, e.name AS target,
+                   'HAS_EMPLOYEE' AS relationship,
+                   'Team' AS source_type, 'Employee' AS target_type
+        }
+        RETURN source_id, source, target_id, target, relationship, source_type, target_type
+        LIMIT $limit
+    """,
+
+
     "concept_dataset": """
         MATCH (d:Dataset)-[:USED_BY_PROCESS]->(p:BusinessProcess)
         RETURN d.dataset_id AS source_id, d.name AS source,

@@ -103,6 +103,10 @@
           <input v-model="wheelZoomEnabled" type="checkbox" />
           <span>Enable mouse-wheel zoom</span>
         </label>
+        <label class="check">
+          <input v-model="autoFitEnabled" type="checkbox" />
+          <span>Auto-fit new graph results</span>
+        </label>
         <p v-if="!wheelZoomEnabled" class="zoom-safe">Scroll zoom is locked to prevent accidental zooming.</p>
 
         <div class="control-actions">
@@ -161,7 +165,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from "vue"
+import { computed, nextTick, onBeforeUnmount, ref, watch } from "vue"
 import { VEdgeLabel, VNetworkGraph } from "v-network-graph"
 import * as vNG from "v-network-graph"
 import { ForceLayout, type ForceEdgeDatum, type ForceNodeDatum } from "v-network-graph/lib/force-layout"
@@ -199,6 +203,7 @@ const search = ref("")
 const showLabels = ref(true)
 const showEdgeLabels = ref(false)
 const wheelZoomEnabled = ref(false)
+const autoFitEnabled = ref(true)
 const linkDistance = ref(125)
 const chargeStrength = ref(-420)
 const appliedLinkDistance = ref(linkDistance.value)
@@ -414,12 +419,32 @@ function hover(nodeKey: string | null) {
   emit("hover", nodeKey)
 }
 
+let fitTimers: Array<ReturnType<typeof setTimeout>> = []
+
+function clearScheduledFit() {
+  for (const timer of fitTimers) clearTimeout(timer)
+  fitTimers = []
+}
+
+function scheduleFit() {
+  if (!autoFitEnabled.value) return
+  clearScheduledFit()
+  nextTick(() => {
+    graph.value?.fitToContents()
+    // A force simulation continues to reposition nodes after initial render.
+    // Re-fit briefly while it settles so the full graph is visible by default.
+    for (const delay of [120, 360, 900]) {
+      fitTimers.push(setTimeout(() => graph.value?.fitToContents(), delay))
+    }
+  })
+}
+
 function applyLayout() {
   appliedLinkDistance.value = linkDistance.value
   appliedChargeStrength.value = chargeStrength.value
   layouts.value = { nodes: {} }
   layoutRevision.value += 1
-  nextTick(() => graph.value?.fitToContents())
+  scheduleFit()
 }
 
 function resetLayout() {
@@ -429,6 +454,7 @@ function resetLayout() {
 }
 
 function fitGraph() {
+  clearScheduledFit()
   graph.value?.fitToContents()
 }
 
@@ -439,6 +465,15 @@ function zoomIn() {
 function zoomOut() {
   graph.value?.zoomOut()
 }
+
+watch(
+  autoFitEnabled,
+  enabled => {
+    if (enabled) scheduleFit()
+  },
+)
+
+onBeforeUnmount(clearScheduledFit)
 
 watch(
   () => props.selectedKey,

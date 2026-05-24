@@ -107,16 +107,29 @@ def explain_read_query(
 
 
 def node_details(label: str, node_id: str) -> dict[str, Any] | None:
-    """Read one stored graph node using a whitelisted label and stable identifier."""
+    """Read one stored graph node by stable ID, with a safe exact-name fallback.
+
+    Approved templates return stable IDs. Broad or generated read evidence can
+    still contain the visible node name in source_id/target_id. In that case,
+    clicking the already displayed node should resolve the stored node by its
+    exact name rather than returning a misleading 404.
+    """
     key = NODE_KEYS.get(label)
     if not key:
-        logger.warning("neo4j.node_details_unsupported_label label=%s node_id=%s", label, node_id)
+        logger.warning("neo4j.node_details_unsupported_label label=%s node_ref=%s", label, node_id)
         return None
 
     query = f"""
-    MATCH (n:{label} {{{key}: $node_id}})
+    MATCH (n:{label})
+    WHERE n.{key} = $node_ref
+       OR toLower(coalesce(n.name, '')) = toLower($node_ref)
+    WITH n,
+         CASE WHEN n.{key} = $node_ref THEN 0 ELSE 1 END AS match_rank,
+         CASE WHEN n.{key} = $node_ref THEN 'stable_id' ELSE 'exact_name_fallback' END AS matched_by
+    ORDER BY match_rank
+    LIMIT 1
     OPTIONAL MATCH (n)-[r]-(m)
-    WITH n, [item IN collect(
+    WITH n, matched_by, [item IN collect(
         CASE WHEN r IS NULL THEN NULL ELSE {{
           relationship: type(r),
           connected_labels: labels(m),
@@ -124,14 +137,25 @@ def node_details(label: str, node_id: str) -> dict[str, Any] | None:
         }} END
     ) WHERE item IS NOT NULL] AS relationships
     RETURN labels(n) AS labels,
+           n.{key} AS stable_id,
+           matched_by,
            properties(n) AS properties,
            relationships
     LIMIT 1
     """
     try:
-        rows = read(query, {"node_id": node_id})
-        logger.info("neo4j.node_details_ok label=%s node_id=%s found=%s", label, node_id, bool(rows))
-        return rows[0] if rows else None
+        rows = read(query, {"node_ref": node_id})
+        if rows:
+            logger.info(
+                "neo4j.node_details_ok label=%s node_ref=%s stable_id=%s matched_by=%s",
+                label,
+                node_id,
+                rows[0].get("stable_id"),
+                rows[0].get("matched_by"),
+            )
+            return rows[0]
+        logger.warning("neo4j.node_details_not_found label=%s node_ref=%s", label, node_id)
+        return None
     except Exception:
-        logger.exception("neo4j.node_details_failed label=%s node_id=%s", label, node_id)
+        logger.exception("neo4j.node_details_failed label=%s node_ref=%s", label, node_id)
         raise

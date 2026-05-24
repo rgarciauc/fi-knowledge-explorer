@@ -41,6 +41,7 @@ def get_kpis() -> list[dict]:
 def examples() -> list[str]:
     return [
         "What is a dataset?",
+        "Who is working in the compliance department?",
         "Who owns system EMBARGO?",
         "What braks if EMABRGO goes down?",
         "What is affected if system EMBARGO fails?",

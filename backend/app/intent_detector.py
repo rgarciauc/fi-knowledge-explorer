@@ -34,6 +34,21 @@ def _extract_term_after(question: str, words: tuple[str, ...]) -> str | None:
     return None
 
 
+
+def _department_search_term(question: str, candidates: list[EntityCandidate]) -> str:
+    """Keep shared department wording broad, e.g. Compliance → both compliance departments."""
+    q = normalize(question)
+    removable = {
+        "who", "is", "are", "working", "work", "works", "in", "the", "department",
+        "departments", "employee", "employees", "staff", "people", "member", "members",
+        "show", "me", "from", "belong", "belongs", "to",
+    }
+    tokens = [token for token in q.split() if token not in removable]
+    if tokens:
+        return " ".join(tokens)
+    department = next((candidate for candidate in candidates if candidate.label == "Department"), None)
+    return department.name if department else ""
+
 def _deterministic_decision(question: str, candidates: list[EntityCandidate]) -> IntentDecision | None:
     q = normalize(question)
     system_candidate = next((c for c in candidates if c.label == "System"), None)
@@ -77,6 +92,18 @@ def _deterministic_decision(question: str, candidates: list[EntityCandidate]) ->
             target_label=candidate.label if candidate else None,
             confidence=0.92 if candidate else 0.62,
             reason="Ownership/responsibility wording detected.",
+        )
+    if (
+        "department" in q
+        and _has_similar_word(q, ("work", "working", "works", "employee", "employees", "staff", "people", "member", "members"))
+    ):
+        term = _department_search_term(question, candidates)
+        return IntentDecision(
+            intent="department_employees",
+            term=term,
+            target_label="Department",
+            confidence=0.94 if term else 0.70,
+            reason="Department staffing wording detected; using approved department-to-employee query.",
         )
     if _has_similar_word(q, ("employee", "role", "task")):
         candidate = next((c for c in candidates if c.label == "Employee"), None)
