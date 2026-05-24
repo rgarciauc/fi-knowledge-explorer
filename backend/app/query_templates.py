@@ -127,25 +127,31 @@ QUERY_TEMPLATES = {
             WHERE toLower(failed.name) CONTAINS toLower($term)
                OR toLower(failed.system_id) = toLower($term)
             MATCH (failed)-[:FEEDS_PIPELINE]->(pipeline:DataPipeline)
-            RETURN failed.system_id, failed.name, pipeline.pipeline_id, pipeline.name,
-                   'FEEDS_PIPELINE', 'System', 'DataPipeline',
-                   'Data pipeline input'
+            RETURN failed.system_id AS source_id, failed.name AS source,
+                   pipeline.pipeline_id AS target_id, pipeline.name AS target,
+                   'FEEDS_PIPELINE' AS relationship,
+                   'System' AS source_type, 'DataPipeline' AS target_type,
+                   'Data pipeline input' AS impact_type
             UNION ALL
             MATCH (failed:System)
             WHERE toLower(failed.name) CONTAINS toLower($term)
                OR toLower(failed.system_id) = toLower($term)
             MATCH (failed)-[:FEEDS_PIPELINE]->(:DataPipeline)-[:PRODUCES_DATASET]->(dataset:Dataset)
-            RETURN failed.system_id, failed.name, dataset.dataset_id, dataset.name,
-                   'PRODUCES_AFFECTED_DATASET', 'System', 'Dataset',
-                   'Dataset derived from failed system'
+            RETURN failed.system_id AS source_id, failed.name AS source,
+                   dataset.dataset_id AS target_id, dataset.name AS target,
+                   'PRODUCES_AFFECTED_DATASET' AS relationship,
+                   'System' AS source_type, 'Dataset' AS target_type,
+                   'Dataset derived from failed system' AS impact_type
             UNION ALL
             MATCH (failed:System)
             WHERE toLower(failed.name) CONTAINS toLower($term)
                OR toLower(failed.system_id) = toLower($term)
             MATCH (failed)-[:FEEDS_PIPELINE]->(:DataPipeline)-[:PRODUCES_DATASET]->(:Dataset)-[:USED_BY_PROCESS]->(p:BusinessProcess)
-            RETURN failed.system_id, failed.name, p.process_id, p.name,
-                   'AFFECTS_PROCESS_VIA_DATA', 'System', 'BusinessProcess',
-                   'Downstream dataset dependency'
+            RETURN failed.system_id AS source_id, failed.name AS source,
+                   p.process_id AS target_id, p.name AS target,
+                   'AFFECTS_PROCESS_VIA_DATA' AS relationship,
+                   'System' AS source_type, 'BusinessProcess' AS target_type,
+                   'Downstream dataset dependency' AS impact_type
         }
         RETURN source_id, source, target_id, target, relationship,
                source_type, target_type, impact_type

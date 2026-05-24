@@ -11,6 +11,9 @@ class Settings(BaseSettings):
     llm_model: str = "llama3.2:3b"
     llm_timeout_seconds: float = 120.0
 
+    log_level: str = "INFO"
+    log_dir: str = "logs"
+
     model_config = SettingsConfigDict(env_file="../.env", extra="ignore")
 
 

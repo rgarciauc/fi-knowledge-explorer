@@ -33,8 +33,9 @@ export function useSuperBankGraph() {
       rows.value = data.rows || []
       nodes.value = data.graph?.nodes || {}
       edges.value = data.graph?.edges || {}
-    } catch {
-      answer.value = "Unable to reach the backend or Neo4j database."
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unknown application error"
+      answer.value = `Request could not be completed. ${message} Check logs/frontend/server.log and logs/backend/backend.log.`
       intent.value = "error"
       rows.value = []
       nodes.value = {}
@@ -48,7 +49,13 @@ export function useSuperBankGraph() {
     selected.value = nodes.value[nodeKey]
     details.value = null
     if (!selected.value?.id || !STORED_NODE_TYPES.has(selected.value.type)) return
-    details.value = await api.details(selected.value.type, selected.value.id).catch(() => null)
+
+    try {
+      details.value = await api.details(selected.value.type, selected.value.id)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to load node details"
+      details.value = { error: message }
+    }
   }
 
   return { question, answer, intent, rows, nodes, edges, loading, selected, details, ask, selectNode }
