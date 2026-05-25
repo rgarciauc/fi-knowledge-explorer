@@ -1,3 +1,4 @@
+import re
 import json
 import logging
 from difflib import SequenceMatcher
