@@ -37,6 +37,28 @@ def _term_or_candidate(question: str, candidates: list[EntityCandidate], labels:
     return candidate.name if candidate else (_extract_term_after(question, fallback_words) or "")
 
 
+def _clean_extracted_term(value: str | None) -> str | None:
+    if not value:
+        return None
+    term = re.sub(r"\s+", " ", value).strip(" ?.:\t\n")
+    return term or None
+
+
+def _system_term_from_text(question: str) -> str | None:
+    """Extract an explicitly named system target even when catalog/LLM resolution fails."""
+    clean = re.sub(r"\s+", " ", question.strip())
+    patterns = (
+        r"(?i)\b(?:it\s+and\s+business\s+owners?|it\s+owner|business\s+owner|owners?|owns)\s+(?:of|for)?\s*(?:the\s+)?(?:system\s+)?(.+?)(?:\?|$)",
+        r"(?i)\bif\s+(?:the\s+)?(?:system\s+)?(.+?)\s+(?:fails?|failed|is\s+unavailable|goes\s+down)\b",
+        r"(?i)\b(?:impact|affected|affects?)\s+(?:of|if|by)\s+(?:the\s+)?(?:system\s+)?(.+?)(?:\?|$)",
+    )
+    for pattern in patterns:
+        match = re.search(pattern, clean)
+        if match:
+            return _clean_extracted_term(match.group(1))
+    return None
+
+
 def _explicit_system_in_question(question: str, candidates: list[EntityCandidate]) -> EntityCandidate | None:
     """Prefer an explicitly named system over controls sharing a generic word such as Monitoring."""
     q = normalize(question)
@@ -60,17 +82,18 @@ def _is_impact_question(question: str) -> bool:
 def _deterministic_decision(question: str, candidates: list[EntityCandidate]) -> IntentDecision | None:
     q = normalize(question)
     system = _explicit_system_in_question(question, candidates)
+    system_term = system.name if system else _system_term_from_text(question)
 
     if _has_similar_word(q, ("kpi", "kpis", "coverage", "metric", "metrics")):
         return IntentDecision(intent="kpis", confidence=0.98, reason="KPI or coverage wording detected.")
 
-    if _is_impact_question(question) and system:
+    if _is_impact_question(question) and system_term:
         return IntentDecision(
             intent="system_impact",
-            term=system.name,
+            term=system_term,
             target_label="System",
-            confidence=0.99 if normalize(system.name) in q else max(0.90, system.score),
-            reason="Explicit system failure/impact question detected before broader payment or compliance routing.",
+            confidence=0.99 if normalize(system_term) in q else 0.92,
+            reason="Explicit system failure/impact wording detected before broader routing.",
         )
 
     if ("payment" in q and _has_similar_word(q, ("flow", "journey", "lifecycle", "route", "goes", "release", "settlement", "compliance"))) or "go no go" in q:
@@ -79,8 +102,14 @@ def _deterministic_decision(question: str, candidates: list[EntityCandidate]) ->
     if ("team" in q or "teams" in q) and _has_similar_word(q, ("interact", "interaction", "depend", "dependency", "connect", "collaborate", "communicate")):
         return IntentDecision(intent="team_interactions", confidence=0.94, reason="Team interaction/dependency wording detected.")
 
-    if ("it owner" in q or "business owner" in q or "owners" in q) and system:
-        return IntentDecision(intent="system_owners", term=system.name, target_label="System", confidence=max(0.90, system.score), reason="Dual system ownership wording and system match detected.")
+    if ("it owner" in q or "business owner" in q or "owners" in q) and system_term:
+        return IntentDecision(
+            intent="system_owners",
+            term=system_term,
+            target_label="System",
+            confidence=0.99 if normalize(system_term) in q else 0.92,
+            reason="Named system ownership wording detected without requiring LLM fallback.",
+        )
 
     if "department" in q and _has_similar_word(q, ("work", "working", "works", "employee", "employees", "staff", "people", "member", "members")):
         return IntentDecision(intent="department_employees", term=_department_term(question, candidates), target_label="Department", confidence=0.95, reason="Department staffing wording detected.")
@@ -107,8 +136,13 @@ def _deterministic_decision(question: str, candidates: list[EntityCandidate]) ->
         return IntentDecision(intent="employee_responsibilities", term=term, confidence=0.84 if term else 0.66, reason="Employee responsibility wording detected.")
 
     if _has_similar_word(q, ("owner", "owns", "owned", "accountable")):
-        term = _term_or_candidate(question, candidates, {"System","Team","Employee"}, ("system", "for"))
-        return IntentDecision(intent="ownership_search", term=term, confidence=0.84 if term else 0.63, reason="Ownership wording detected.")
+        term = system_term or _term_or_candidate(question, candidates, {"System","Team","Employee"}, ("system", "for"))
+        return IntentDecision(
+            intent="ownership_search",
+            term=term,
+            confidence=0.84 if term else 0.49,
+            reason="General ownership wording detected.",
+        )
 
     if "next step" in q or (_has_similar_word(q, ("after",)) and any(c.label == "ProcessStep" for c in candidates)):
         term = _term_or_candidate(question, candidates, {"ProcessStep"}, ("after", "step"))

@@ -91,6 +91,29 @@ def summarize_evidence(
             f"through {len(rows)} ownership or management evidence relationship(s)."
         )
 
+    if template == "employee_responsibilities":
+        person = str(term or (employees[0] if employees else "The selected employee"))
+        owned_systems = [
+            str(row["target"]) for row in rows
+            if row.get("relationship") in {"IT_OWNER_OF", "BUSINESS_OWNER_OF"} and row.get("target")
+        ]
+        responsibilities = [
+            str(row["target"]) for row in rows
+            if row.get("relationship") == "RESPONSIBLE_FOR" and row.get("target")
+        ]
+        led_teams = [
+            str(row["target"]) for row in rows
+            if row.get("relationship") == "LEADS_TEAM" and row.get("target")
+        ]
+        parts = [f"{person} has recorded accountability evidence in the graph."]
+        if led_teams:
+            parts.append(f"Team leadership: {_join_names(led_teams, 3)}.")
+        if owned_systems:
+            parts.append(f"Owned systems: {_join_names(owned_systems, 5)}.")
+        if responsibilities:
+            parts.append(f"Assigned responsibilities: {_join_names(responsibilities, 5)}.")
+        return " ".join(parts)
+
     if template == "department_employees":
         scope = str(term or "the selected department")
         return (

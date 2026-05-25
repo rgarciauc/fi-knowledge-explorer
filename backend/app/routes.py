@@ -8,6 +8,7 @@ from .query_templates import QUERY_TEMPLATES
 from .schemas import AskRequest
 from .service import answer_question
 from .streaming_answer import answer_event_stream
+from .ollama_client import get_ollama_status
 
 logger = logging.getLogger("super_bank.api")
 router = APIRouter(prefix="/api")
@@ -44,6 +45,11 @@ def get_node(label: str, node_id: str) -> dict:
 @router.get("/kpis")
 def get_kpis() -> list[dict]:
     return read(QUERY_TEMPLATES["kpis"])
+
+
+@router.get("/llm/status")
+def llm_status() -> dict:
+    return get_ollama_status()
 
 @router.get("/examples")
 def examples() -> list[str]:

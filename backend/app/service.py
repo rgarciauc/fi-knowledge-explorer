@@ -58,10 +58,20 @@ def _catalog() -> list[dict[str, Any]]:
 def _global_rows(term: str) -> list[dict[str, Any]]:
     return read(QUERY_TEMPLATES["global_search"], {"labels": sorted(ALLOWED_LABELS), "term": term, "limit": DEFAULT_LIMIT})
 
+def _clean_term(term: str | None) -> str | None:
+    if term is None:
+        return None
+    cleaned = re.sub(r"\s+", " ", str(term)).strip()
+    return cleaned or None
+
+
 def _params(intent: str, term: str | None) -> dict[str, Any]:
     params: dict[str, Any] = {"limit": DEFAULT_LIMIT}
     if intent in TERM_INTENTS:
-        params["term"] = term or ""
+        cleaned = _clean_term(term)
+        if not cleaned:
+            raise ValueError(f"Intent {intent!r} requires a non-empty resolved term.")
+        params["term"] = cleaned
     return params
 
 def _concept_response(concept: str) -> dict[str, Any]:
@@ -91,9 +101,9 @@ def answer_question(question: str) -> dict[str, Any]:
     catalog = _catalog()
     decision, candidates = detect_intent(question, catalog)
     selected_candidate = best_candidate_for_intent(decision.intent, candidates)
-    resolved_term = decision.term
+    resolved_term = _clean_term(decision.term)
     if selected_candidate and decision.intent in {"system_impact", "system_owners", "process_pipeline", "next_step", "employee_search", "employee_responsibilities"}:
-        resolved_term = selected_candidate.name
+        resolved_term = _clean_term(selected_candidate.name)
 
     trace = QueryTrace(
         query_method="pending",
@@ -109,13 +119,26 @@ def answer_question(question: str) -> dict[str, Any]:
     if decision.intent in TEMPLATE_INTENTS:
         trace.query_method = "approved_template_v2"
         trace.template = decision.intent
-        rows = read(QUERY_TEMPLATES[decision.intent], _params(decision.intent, resolved_term))
-        if not rows and settings.global_search_enabled and resolved_term and decision.intent not in {"kpis", "overview"}:
-            trace.fallback_reason = f"Approved v2 template '{decision.intent}' returned no evidence."
-            rows = _global_rows(resolved_term)
-            if rows:
-                trace.query_method = "global_search_after_empty_template"
-                trace.template = "global_search"
+        if decision.intent in TERM_INTENTS and not resolved_term:
+            trace.query_method = "clarification_required_missing_term"
+            trace.fallback_reason = (
+                f"Intent '{decision.intent}' requires a named graph entity, but no target was resolved. "
+                "No broad empty-term query was executed."
+            )
+            logger.warning(
+                "question.missing_required_term intent=%s question=%r candidates=%r",
+                decision.intent,
+                question[:160],
+                [candidate.name for candidate in candidates],
+            )
+        else:
+            rows = read(QUERY_TEMPLATES[decision.intent], _params(decision.intent, resolved_term))
+            if not rows and settings.global_search_enabled and resolved_term and decision.intent not in {"kpis", "overview"}:
+                trace.fallback_reason = f"Approved v2 template '{decision.intent}' returned no evidence."
+                rows = _global_rows(resolved_term)
+                if rows:
+                    trace.query_method = "global_search_after_empty_template"
+                    trace.template = "global_search"
 
     elif decision.intent == "global_search":
         trace.query_method = "global_search"

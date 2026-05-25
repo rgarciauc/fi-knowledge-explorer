@@ -95,41 +95,57 @@ QUERY_TEMPLATES = {
     """,
 
     "system_owners": """
+        MATCH (selected:System)
+        WHERE trim($term) <> ''
+          AND (
+            toLower(selected.name) = toLower($term)
+            OR toLower(selected.system_id) = toLower($term)
+            OR toLower(selected.name) CONTAINS toLower($term)
+          )
+        WITH selected,
+             CASE WHEN toLower(selected.name) = toLower($term)
+                       OR toLower(selected.system_id) = toLower($term)
+                  THEN 0 ELSE 1 END AS match_rank
+        ORDER BY match_rank, selected.name
+        LIMIT 1
         CALL {
-            MATCH (it:Employee)-[:IT_OWNER_OF]->(s:System)
-            WHERE toLower(s.name) CONTAINS toLower($term) OR toLower(s.system_id) = toLower($term)
+            WITH selected
+            MATCH (it:Employee)-[:IT_OWNER_OF]->(selected)
             RETURN it.employee_id AS source_id, it.name AS source,
-                   s.system_id AS target_id, s.name AS target,
+                   selected.system_id AS target_id, selected.name AS target,
                    'IT_OWNER_OF' AS relationship, 'Employee' AS source_type, 'System' AS target_type
             UNION ALL
-            MATCH (business:Employee)-[:BUSINESS_OWNER_OF]->(s:System)
-            WHERE toLower(s.name) CONTAINS toLower($term) OR toLower(s.system_id) = toLower($term)
+            WITH selected
+            MATCH (business:Employee)-[:BUSINESS_OWNER_OF]->(selected)
             RETURN business.employee_id AS source_id, business.name AS source,
-                   s.system_id AS target_id, s.name AS target,
+                   selected.system_id AS target_id, selected.name AS target,
                    'BUSINESS_OWNER_OF' AS relationship, 'Employee' AS source_type, 'System' AS target_type
             UNION ALL
-            MATCH (team:Team)-[:MANAGES_SYSTEM]->(s:System)
-            WHERE toLower(s.name) CONTAINS toLower($term) OR toLower(s.system_id) = toLower($term)
+            WITH selected
+            MATCH (team:Team)-[:MANAGES_SYSTEM]->(selected)
             RETURN team.team_id AS source_id, team.name AS source,
-                   s.system_id AS target_id, s.name AS target,
+                   selected.system_id AS target_id, selected.name AS target,
                    'MANAGES_SYSTEM' AS relationship, 'Team' AS source_type, 'System' AS target_type
         }
-        RETURN source_id, source, target_id, target, relationship, source_type, target_type
+        RETURN source_id, source, target_id, target, relationship, source_type, target_type,
+               'accountability' AS layout_mode, selected.system_id AS root_id
         LIMIT $limit
     """,
 
     "ownership_search": """
         CALL {
             MATCH (team:Team)-[:MANAGES_SYSTEM]->(s:System)
-            WHERE toLower(s.name) CONTAINS toLower($term)
-               OR toLower(team.name) CONTAINS toLower($term)
+            WHERE trim($term) <> ''
+              AND (toLower(s.name) CONTAINS toLower($term)
+                   OR toLower(team.name) CONTAINS toLower($term))
             RETURN team.team_id AS source_id, team.name AS source,
                    s.system_id AS target_id, s.name AS target,
                    'MANAGES_SYSTEM' AS relationship, 'Team' AS source_type, 'System' AS target_type
             UNION ALL
             MATCH (e:Employee)-[r:IT_OWNER_OF|BUSINESS_OWNER_OF]->(s:System)
-            WHERE toLower(s.name) CONTAINS toLower($term)
-               OR toLower(e.name) CONTAINS toLower($term)
+            WHERE trim($term) <> ''
+              AND (toLower(s.name) CONTAINS toLower($term)
+                   OR toLower(e.name) CONTAINS toLower($term))
             RETURN e.employee_id AS source_id, e.name AS source,
                    s.system_id AS target_id, s.name AS target,
                    type(r) AS relationship, 'Employee' AS source_type, 'System' AS target_type
@@ -151,15 +167,51 @@ QUERY_TEMPLATES = {
     """,
 
     "employee_responsibilities": """
-        MATCH (e:Employee)-[:RESPONSIBLE_FOR]->(r:Responsibility)
-        WHERE toLower(e.name) CONTAINS toLower($term)
-           OR toLower(e.role) CONTAINS toLower($term)
-           OR toLower(r.name) CONTAINS toLower($term)
-           OR toLower(r.category) CONTAINS toLower($term)
-        RETURN e.employee_id AS source_id, e.name AS source,
-               r.responsibility_id AS target_id, r.name AS target,
-               'RESPONSIBLE_FOR' AS relationship, 'Employee' AS source_type, 'Responsibility' AS target_type,
-               r.description AS evidence_type
+        MATCH (selected:Employee)
+        WHERE trim($term) <> ''
+          AND (
+            toLower(selected.name) = toLower($term)
+            OR toLower(selected.employee_id) = toLower($term)
+            OR toLower(selected.name) CONTAINS toLower($term)
+            OR toLower(selected.role) CONTAINS toLower($term)
+          )
+        WITH selected,
+             CASE WHEN toLower(selected.name) = toLower($term)
+                       OR toLower(selected.employee_id) = toLower($term)
+                  THEN 0 ELSE 1 END AS match_rank
+        ORDER BY match_rank, selected.name
+        LIMIT 1
+        CALL {
+            WITH selected
+            MATCH (selected)-[:RESPONSIBLE_FOR]->(responsibility:Responsibility)
+            RETURN selected.employee_id AS source_id, selected.name AS source,
+                   responsibility.responsibility_id AS target_id, responsibility.name AS target,
+                   'RESPONSIBLE_FOR' AS relationship, 'Employee' AS source_type,
+                   'Responsibility' AS target_type, responsibility.description AS evidence_type
+            UNION ALL
+            WITH selected
+            MATCH (selected)-[:IT_OWNER_OF]->(system:System)
+            RETURN selected.employee_id AS source_id, selected.name AS source,
+                   system.system_id AS target_id, system.name AS target,
+                   'IT_OWNER_OF' AS relationship, 'Employee' AS source_type,
+                   'System' AS target_type, system.description AS evidence_type
+            UNION ALL
+            WITH selected
+            MATCH (selected)-[:BUSINESS_OWNER_OF]->(system:System)
+            RETURN selected.employee_id AS source_id, selected.name AS source,
+                   system.system_id AS target_id, system.name AS target,
+                   'BUSINESS_OWNER_OF' AS relationship, 'Employee' AS source_type,
+                   'System' AS target_type, system.description AS evidence_type
+            UNION ALL
+            WITH selected
+            MATCH (selected)-[:LEADS_TEAM]->(team:Team)
+            RETURN selected.employee_id AS source_id, selected.name AS source,
+                   team.team_id AS target_id, team.name AS target,
+                   'LEADS_TEAM' AS relationship, 'Employee' AS source_type,
+                   'Team' AS target_type, team.description AS evidence_type
+        }
+        RETURN source_id, source, target_id, target, relationship, source_type, target_type, evidence_type,
+               'accountability' AS layout_mode, selected.employee_id AS root_id
         LIMIT $limit
     """,
 

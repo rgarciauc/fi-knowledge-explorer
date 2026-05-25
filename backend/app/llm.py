@@ -69,7 +69,7 @@ async def stream_explanation(
 
     logger.info("ollama.progressive_started model=%s evidence_rows=%d", settings.llm_model, len(rows))
     try:
-        async with httpx.AsyncClient(timeout=settings.llm_timeout_seconds) as client:
+        async with httpx.AsyncClient(timeout=settings.llm_timeout_seconds, trust_env=False) as client:
             async with client.stream(
                 "POST",
                 settings.llm_url,
@@ -81,11 +81,22 @@ async def stream_explanation(
                     "options": {"temperature": 0.1},
                 },
             ) as response:
-                response.raise_for_status()
+                if not response.is_success:
+                    body = (await response.aread()).decode("utf-8", errors="replace")[:800]
+                    logger.error(
+                        "ollama.progressive_http_error model=%s status=%d body=%r url=%s",
+                        settings.llm_model,
+                        response.status_code,
+                        body,
+                        settings.llm_url,
+                    )
+                    response.raise_for_status()
                 async for line in response.aiter_lines():
                     if not line.strip():
                         continue
                     payload = json.loads(line)
+                    if payload.get("error"):
+                        raise RuntimeError(f"Ollama stream error: {payload['error']}")
                     final_payload = payload
                     delta = str(payload.get("response", ""))
                     if delta:
@@ -102,7 +113,7 @@ async def stream_explanation(
             _ms(final_payload.get("eval_duration")),
             emitted,
         )
-    except (httpx.HTTPError, ValueError, KeyError, json.JSONDecodeError):
+    except (httpx.HTTPError, ValueError, KeyError, json.JSONDecodeError, RuntimeError):
         logger.exception(
             "ollama.progressive_failed model=%s url=%s wall_ms=%d",
             settings.llm_model,
