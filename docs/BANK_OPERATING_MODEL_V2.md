@@ -110,6 +110,5 @@ How does the IT Service Desk support all teams?
 Which systems are governed by Identity Management?
 Which systems are under DORA oversight?
 What responsibilities does Amira Haddad have?
-What is affected if Sanctions Monitoring fails?
-Show KPI summary.
+What is affected if Sanctions Monitoring fails?.
 ```

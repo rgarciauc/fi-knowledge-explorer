@@ -1,9 +1,13 @@
 import logging
+
+from fastapi import Request
+from fastapi.responses import StreamingResponse
 from fastapi import APIRouter, HTTPException
 from .db import node_details, read
 from .query_templates import QUERY_TEMPLATES
 from .schemas import AskRequest
 from .service import answer_question
+from .streaming_answer import answer_event_stream
 
 logger = logging.getLogger("super_bank.api")
 router = APIRouter(prefix="/api")
@@ -11,6 +15,20 @@ router = APIRouter(prefix="/api")
 @router.post("/ask")
 def ask(payload: AskRequest) -> dict:
     return answer_question(payload.question)
+
+@router.post("/ask/stream")
+async def ask_stream(payload: AskRequest, request: Request) -> StreamingResponse:
+    # Progressive answer: evidence first, then streamed grounded AI explanation.
+    return StreamingResponse(
+        answer_event_stream(payload.question, request),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-transform",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+
 
 @router.get("/nodes/{label}/{node_id}")
 def get_node(label: str, node_id: str) -> dict:
@@ -40,5 +58,4 @@ def examples() -> list[str]:
         "Which systems are under DORA oversight?",
         "What responsibilities does Amira Haddad have?",
         "What is affected if Sanctions Monitoring fails?",
-        "Show KPI summary",
     ]

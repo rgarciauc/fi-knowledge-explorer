@@ -42,7 +42,7 @@
 
       <template v-else>
         <div class="insight-grid">
-          <EvidencePanel :answer="answer" :intent="intent" :rows="rows" :query-trace="queryTrace" />
+          <EvidencePanel :answer="answer" :ai-explanation="aiExplanation" :explanation-status="explanationStatus" :intent="intent" :rows="rows" :query-trace="queryTrace" />
           <NodeDetailsPanel :node="selected" :details="details" />
         </div>
 
@@ -84,6 +84,8 @@ const {
   question,
   pendingQuestion,
   answer,
+  aiExplanation,
+  explanationStatus,
   intent,
   rows,
   queryTrace,
