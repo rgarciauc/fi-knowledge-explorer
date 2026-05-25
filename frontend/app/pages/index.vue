@@ -1,5 +1,7 @@
 <template>
   <main class="page">
+    <BrandHero @explore="focusQuestion" @kpis="openKpis" />
+
     <QuestionPanel
       v-model="question"
       :examples="examples || []"
@@ -9,18 +11,10 @@
     />
 
     <nav class="workspace-tabs" aria-label="Application sections">
-      <button
-        type="button"
-        :class="{ active: activeTab === 'explorer' }"
-        @click="activeTab = 'explorer'"
-      >
+      <button type="button" :class="{ active: activeTab === 'explorer' }" @click="activeTab = 'explorer'">
         Graph Explorer
       </button>
-      <button
-        type="button"
-        :class="{ active: activeTab === 'kpis' }"
-        @click="openKpis"
-      >
+      <button type="button" :class="{ active: activeTab === 'kpis' }" @click="openKpis">
         KPI Dashboard
       </button>
     </nav>
@@ -42,8 +36,24 @@
 
       <template v-else>
         <div class="insight-grid">
-          <EvidencePanel :answer="answer" :ai-explanation="aiExplanation" :explanation-status="explanationStatus" :intent="intent" :rows="rows" :query-trace="queryTrace" />
-          <NodeDetailsPanel :node="selected" :details="details" />
+          <EvidencePanel
+            :answer="answer"
+            :ai-explanation="aiExplanation"
+            :explanation-status="explanationStatus"
+            :intent="intent"
+            :rows="rows"
+            :query-trace="queryTrace"
+          />
+          <NodeDetailsPanel
+            :node="selected"
+            :details="details"
+            :nodes="nodes"
+            :edges="edges"
+            :presentation="presentation"
+            @select="selectNode"
+            @clear="clearSelection"
+            @open="openEntityDrawer"
+          />
         </div>
 
         <GraphViewer
@@ -66,17 +76,27 @@
       :error="kpiError"
       @refresh="loadKpis"
     />
+
+    <EntityDetailsDrawer
+      :open="entityDrawerOpen"
+      :node="selected"
+      :details="details"
+      :nodes="nodes"
+      :edges="edges"
+      @close="entityDrawerOpen = false"
+    />
   </main>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue"
+import { nextTick, ref } from "vue"
 import type { KpiRecord } from "~/utils/api"
 
 const api = useApi()
 const { data: examples } = await useAsyncData("examples", () => api.examples())
 
 const activeTab = ref<"explorer" | "kpis">("explorer")
+const entityDrawerOpen = ref(false)
 const kpi = ref<KpiRecord | null>(null)
 const kpiLoading = ref(false)
 const kpiError = ref("")
@@ -101,16 +121,30 @@ const {
   hoverDetails,
   ask,
   selectNode,
+  clearSelection,
   hoverNode,
 } = useSuperBankGraph()
 
 function selectExample(value: string) {
   question.value = value
+  void focusQuestion()
+}
+
+async function focusQuestion() {
+  activeTab.value = "explorer"
+  await nextTick()
+  document.getElementById("graph-query")?.scrollIntoView({ behavior: "smooth", block: "center" })
+  document.getElementById("graph-question-input")?.focus()
 }
 
 async function runQuestion() {
   activeTab.value = "explorer"
+  entityDrawerOpen.value = false
   await ask()
+}
+
+function openEntityDrawer() {
+  if (selected.value) entityDrawerOpen.value = true
 }
 
 async function loadKpis() {
@@ -128,6 +162,7 @@ async function loadKpis() {
 }
 
 async function openKpis() {
+  entityDrawerOpen.value = false
   activeTab.value = "kpis"
   if (!kpi.value) await loadKpis()
 }

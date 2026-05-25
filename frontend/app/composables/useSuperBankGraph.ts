@@ -5,7 +5,7 @@ type ExplanationStatus = "idle" | "generating" | "complete" | "unavailable" | "s
 
 export function useSuperBankGraph() {
   const api = useApi()
-  const question = ref("Show the end-to-end payment flow.")
+  const question = ref("Show the end-to-end payment flow and explain where a payment can be blocked.")
   const pendingQuestion = ref("")
   const answer = ref("")
   const aiExplanation = ref("")
@@ -31,6 +31,11 @@ export function useSuperBankGraph() {
     return `${node.type}:${node.id}`
   }
 
+  function clearSelection() {
+    selectedKey.value = null
+    details.value = null
+  }
+
   function clearResult() {
     answer.value = ""
     aiExplanation.value = ""
@@ -41,8 +46,7 @@ export function useSuperBankGraph() {
     nodes.value = {}
     edges.value = {}
     presentation.value = { layout_mode: "network" }
-    selectedKey.value = null
-    details.value = null
+    clearSelection()
     hoveredNodeKey.value = null
     hoverDetails.value = null
     detailCache.clear()
@@ -159,6 +163,7 @@ export function useSuperBankGraph() {
     hoverDetails,
     ask,
     selectNode,
+    clearSelection,
     hoverNode,
   }
 }

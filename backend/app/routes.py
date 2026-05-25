@@ -55,7 +55,7 @@ def llm_status() -> dict:
 def examples() -> list[str]:
     return [
         "Show the end-to-end payment flow",
-        "Who is the business owner of Sanction Monitoring system?"
+        "Who is the business owner of Sanction Monitoring system?",
         "Who works in the IT Compliance Department?",
         "What systems depend on the Input Hub System?",
         "How does the IT Service Desk support all teams?",
