@@ -6,6 +6,7 @@ import httpx
 from pydantic import BaseModel, ValidationError
 
 from .config import settings
+from .ollama_request_options import ollama_keep_alive_value
 
 
 logger = logging.getLogger("super_bank.ollama")
@@ -71,15 +72,15 @@ def structured_generate(task: str, prompt: str, response_model: type[ResponseMod
                     "prompt": prompt,
                     "stream": False,
                     "format": response_model.model_json_schema(),
-                    "keep_alive": settings.ollama_keep_alive,
+                    "keep_alive": ollama_keep_alive_value(),
                     "options": {"temperature": 0.0},
                 },
             )
         if not response.is_success:
             logger.error(
-                "ollama.structured_http_error task=%s model=%s status=%d body=%r wall_ms=%d",
+                "ollama.structured_http_error task=%s model=%s status=%d body=%r keep_alive=%r wall_ms=%d",
                 task, settings.llm_model, response.status_code, _safe_body(response),
-                round((perf_counter() - started) * 1000),
+                ollama_keep_alive_value(), round((perf_counter() - started) * 1000),
             )
             return None
         payload = response.json()

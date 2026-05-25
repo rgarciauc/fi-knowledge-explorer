@@ -54,9 +54,8 @@ def llm_status() -> dict:
 @router.get("/examples")
 def examples() -> list[str]:
     return [
-        "Show the end-to-end payment flow and GO or NO-GO decision",
-        "How do the IT Payments and IT Compliance teams interact?",
-        "Who are the IT and business owners of Sanctions Monitoring?",
+        "Show the end-to-end payment flow",
+        "Who is the business owner of Sanction Monitoring system?"
         "Who works in the IT Compliance Department?",
         "What systems depend on the Input Hub System?",
         "How does the IT Service Desk support all teams?",

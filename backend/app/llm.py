@@ -8,6 +8,7 @@ from typing import Any, AsyncIterator
 import httpx
 
 from .config import settings
+from .ollama_request_options import ollama_keep_alive_value
 from .evidence_summarizer import summarize_evidence
 
 
@@ -77,17 +78,18 @@ async def stream_explanation(
                     "model": settings.llm_model,
                     "prompt": prompt,
                     "stream": True,
-                    "keep_alive": settings.ollama_keep_alive,
+                    "keep_alive": ollama_keep_alive_value(),
                     "options": {"temperature": 0.1},
                 },
             ) as response:
                 if not response.is_success:
                     body = (await response.aread()).decode("utf-8", errors="replace")[:800]
                     logger.error(
-                        "ollama.progressive_http_error model=%s status=%d body=%r url=%s",
+                        "ollama.progressive_http_error model=%s status=%d body=%r keep_alive=%r url=%s",
                         settings.llm_model,
                         response.status_code,
                         body,
+                        ollama_keep_alive_value(),
                         settings.llm_url,
                     )
                     response.raise_for_status()

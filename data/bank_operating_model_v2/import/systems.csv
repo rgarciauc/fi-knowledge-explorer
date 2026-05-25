@@ -7,5 +7,5 @@ SYS_MARKET,Compliance Market Abuse Surveillance,Compliance Surveillance,Monitors
 SYS_SETTLE,Settlement & Reconciliation Platform,Settlement,Reconciles internal payment status with settlement confirmations and account movement.,Critical,Confidential,Active
 SYS_TICKET,Ticketing System,IT Service Management,"Tracks incidents, service requests, investigations and resolutions for teams.",High,Internal,Active
 SYS_IDM,System Manager Identity,Identity Governance,"Manages user identities, permissions and access-review evidence.",Critical,Restricted,Active
-SYS_INPUT,Input Hub System,Data Integration,Ingests and normalises external feeds for consuming compliance and payment systems.,Critical,Restricted,Active
+SYS_INPUT,Input Hub System,Data Integration,Ingests and normalises external data for our internal consuming systems.,Critical,Restricted,Active
 SYS_INNOV,Innovation Sandbox,Development,Supports assessment and prototyping of future technology opportunities.,Medium,Internal,Active

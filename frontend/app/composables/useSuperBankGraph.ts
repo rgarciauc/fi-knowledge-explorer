@@ -5,7 +5,7 @@ type ExplanationStatus = "idle" | "generating" | "complete" | "unavailable" | "s
 
 export function useSuperBankGraph() {
   const api = useApi()
-  const question = ref("Show the end-to-end payment flow and explain where a payment can be blocked.")
+  const question = ref("Show the end-to-end payment flow.")
   const pendingQuestion = ref("")
   const answer = ref("")
   const aiExplanation = ref("")
