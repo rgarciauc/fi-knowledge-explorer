@@ -58,8 +58,7 @@ QUERY_TEMPLATES = {
                    'Control' AS source_type, 'ProcessStep' AS target_type,
                    step.sequence AS order_no
         }
-        RETURN source_id, source, target_id, target, relationship, source_type, target_type, order_no,
-               'ordered_flow' AS layout_mode, 'BP_PAYMENT' AS root_id
+        RETURN source_id, source, target_id, target, relationship, source_type, target_type, order_no
         ORDER BY order_no
         LIMIT $limit
     """,
@@ -243,8 +242,7 @@ QUERY_TEMPLATES = {
                step.step_id AS target_id, step.name AS target,
                'STEP_' + toString(r.sequence) AS relationship,
                'BusinessProcess' AS source_type, 'ProcessStep' AS target_type,
-               r.sequence AS step_no, r.sequence AS order_no,
-               'ordered_flow' AS layout_mode, p.process_id AS root_id
+               r.sequence AS step_no
         ORDER BY step_no
         LIMIT $limit
     """,
@@ -262,84 +260,29 @@ QUERY_TEMPLATES = {
     """,
 
     "system_impact": """
-        MATCH (failed:System)
-        WHERE toLower(failed.name) = toLower($term)
-           OR toLower(failed.system_id) = toLower($term)
-           OR toLower(failed.name) CONTAINS toLower($term)
-        WITH failed,
-             CASE WHEN toLower(failed.name) = toLower($term)
-                       OR toLower(failed.system_id) = toLower($term)
-                  THEN 0 ELSE 1 END AS match_rank
-        ORDER BY match_rank
-        LIMIT 1
         CALL {
-            WITH failed
-            MATCH (dependent:System)-[:DEPENDS_ON]->(failed)
+            MATCH (dependent:System)-[:DEPENDS_ON]->(failed:System)
+            WHERE toLower(failed.name) CONTAINS toLower($term)
+               OR toLower(failed.system_id) = toLower($term)
             RETURN failed.system_id AS source_id, failed.name AS source,
                    dependent.system_id AS target_id, dependent.name AS target,
-                   'IMPACTS_DEPENDENT_SYSTEM' AS relationship,
-                   'System' AS source_type, 'System' AS target_type,
-                   1 AS impact_level, 'Dependent system' AS impact_category
-
+                   'AFFECTS_DEPENDENT_SYSTEM' AS relationship, 'System' AS source_type, 'System' AS target_type
             UNION ALL
-            WITH failed
-            MATCH (process:BusinessProcess)-[:USES_SYSTEM]->(failed)
+            MATCH (process:BusinessProcess)-[:USES_SYSTEM]->(failed:System)
+            WHERE toLower(failed.name) CONTAINS toLower($term)
+               OR toLower(failed.system_id) = toLower($term)
             RETURN failed.system_id AS source_id, failed.name AS source,
                    process.process_id AS target_id, process.name AS target,
-                   'IMPACTS_BUSINESS_PROCESS' AS relationship,
-                   'System' AS source_type, 'BusinessProcess' AS target_type,
-                   1 AS impact_level, 'Affected process' AS impact_category
-
+                   'AFFECTS_PROCESS' AS relationship, 'System' AS source_type, 'BusinessProcess' AS target_type
             UNION ALL
-            WITH failed
-            MATCH (step:ProcessStep)-[:USES_SYSTEM]->(failed)
+            MATCH (step:ProcessStep)-[:USES_SYSTEM]->(failed:System)
+            WHERE toLower(failed.name) CONTAINS toLower($term)
+               OR toLower(failed.system_id) = toLower($term)
             RETURN failed.system_id AS source_id, failed.name AS source,
                    step.step_id AS target_id, step.name AS target,
-                   'IMPACTS_PROCESS_STEP' AS relationship,
-                   'System' AS source_type, 'ProcessStep' AS target_type,
-                   1 AS impact_level, 'Affected step' AS impact_category
-
-            UNION ALL
-            WITH failed
-            MATCH (control:Control)-[:IMPLEMENTED_BY]->(failed)
-            RETURN failed.system_id AS source_id, failed.name AS source,
-                   control.control_id AS target_id, control.name AS target,
-                   'IMPLEMENTS_CONTROL' AS relationship,
-                   'System' AS source_type, 'Control' AS target_type,
-                   1 AS impact_level, 'Affected control' AS impact_category
-
-            UNION ALL
-            WITH failed
-            MATCH (control:Control)-[:IMPLEMENTED_BY]->(failed)
-            MATCH (control)-[:APPLIES_TO]->(step:ProcessStep)
-            RETURN control.control_id AS source_id, control.name AS source,
-                   step.step_id AS target_id, step.name AS target,
-                   'PROTECTS_STEP' AS relationship,
-                   'Control' AS source_type, 'ProcessStep' AS target_type,
-                   2 AS impact_level, 'Control-dependent step' AS impact_category
-
-            UNION ALL
-            WITH failed
-            MATCH (team:Team)-[:MANAGES_SYSTEM]->(failed)
-            RETURN failed.system_id AS source_id, failed.name AS source,
-                   team.team_id AS target_id, team.name AS target,
-                   'OPERATED_BY_TEAM' AS relationship,
-                   'System' AS source_type, 'Team' AS target_type,
-                   1 AS impact_level, 'Operational owner' AS impact_category
-
-            UNION ALL
-            WITH failed
-            MATCH (employee:Employee)-[owner:IT_OWNER_OF|BUSINESS_OWNER_OF]->(failed)
-            RETURN failed.system_id AS source_id, failed.name AS source,
-                   employee.employee_id AS target_id, employee.name AS target,
-                   type(owner) AS relationship,
-                   'System' AS source_type, 'Employee' AS target_type,
-                   1 AS impact_level, 'Accountable owner' AS impact_category
+                   'AFFECTS_STEP' AS relationship, 'System' AS source_type, 'ProcessStep' AS target_type
         }
-        RETURN source_id, source, target_id, target, relationship,
-               source_type, target_type, impact_level, impact_category,
-               'radial_impact' AS layout_mode, failed.system_id AS root_id
-        ORDER BY impact_level, impact_category, target
+        RETURN source_id, source, target_id, target, relationship, source_type, target_type
         LIMIT $limit
     """,
 

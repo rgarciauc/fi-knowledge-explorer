@@ -27,27 +27,20 @@ def build_graph(rows: list[dict[str, Any]]) -> dict[str, Any]:
         source_key = _key(source_type, source_id, source_name)
         target_key = _key(target_type, target_id, target_name)
 
-        source_node = nodes.setdefault(source_key, {
+        nodes[source_key] = {
             "id": source_id,
             "name": source_name,
             "type": source_type,
-        })
-        target_node = nodes.setdefault(target_key, {
+        }
+        nodes[target_key] = {
             "id": target_id,
             "name": target_name,
             "type": target_type,
-        })
-        if row.get("order_no") is not None and target_type == "ProcessStep":
-            target_node["order"] = row["order_no"]
-        if row.get("impact_level") is not None:
-            target_node["level"] = row["impact_level"]
-            target_node["impact_category"] = row.get("impact_category")
+        }
         edges[f"e-{index}"] = {
             "source": source_key,
             "target": target_key,
             "label": row.get("relationship", "RELATED_TO"),
-            "order": row.get("order_no"),
-            "impact_level": row.get("impact_level"),
         }
 
     degrees = {node_key: 0 for node_key in nodes}
@@ -57,17 +50,4 @@ def build_graph(rows: list[dict[str, Any]]) -> dict[str, Any]:
     for node_key, node in nodes.items():
         node["degree"] = degrees[node_key]
 
-    layout_mode = next((row.get("layout_mode") for row in rows if row.get("layout_mode")), "network")
-    root_id = next((row.get("root_id") for row in rows if row.get("root_id")), None)
-    root_key = next(
-        (node_key for node_key, node in nodes.items() if root_id and node.get("id") == root_id),
-        None,
-    )
-    return {
-        "nodes": nodes,
-        "edges": edges,
-        "presentation": {
-            "layout_mode": layout_mode,
-            "root_key": root_key,
-        },
-    }
+    return {"nodes": nodes, "edges": edges}

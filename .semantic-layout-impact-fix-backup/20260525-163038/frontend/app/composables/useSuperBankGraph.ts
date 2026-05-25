@@ -15,7 +15,6 @@ export function useSuperBankGraph() {
   const queryTrace = ref<any>(null)
   const nodes = ref<Record<string, any>>({})
   const edges = ref<Record<string, any>>({})
-  const presentation = ref<{ layout_mode?: string; root_key?: string | null }>({ layout_mode: "network" })
   const loading = ref(false)
 
   const selectedKey = ref<string | null>(null)
@@ -40,7 +39,6 @@ export function useSuperBankGraph() {
     queryTrace.value = null
     nodes.value = {}
     edges.value = {}
-    presentation.value = { layout_mode: "network" }
     selectedKey.value = null
     details.value = null
     hoveredNodeKey.value = null
@@ -79,7 +77,6 @@ export function useSuperBankGraph() {
             queryTrace.value = data.query_trace || null
             nodes.value = data.graph?.nodes || {}
             edges.value = data.graph?.edges || {}
-            presentation.value = data.graph?.presentation || { layout_mode: "network" }
             explanationStatus.value = data.llm_status === "generating" ? "generating" : "skipped"
             loading.value = false
             pendingQuestion.value = ""
@@ -150,7 +147,6 @@ export function useSuperBankGraph() {
     queryTrace,
     nodes,
     edges,
-    presentation,
     loading,
     selectedKey,
     selected,

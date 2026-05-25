@@ -106,33 +106,12 @@ def summarize_evidence(
         )
 
     if template == "system_impact":
-        source = str(term or (_join_names(systems[:1]) or "The selected system"))
-        dependent_systems = [
-            str(row["target"]) for row in rows
-            if row.get("relationship") == "IMPACTS_DEPENDENT_SYSTEM" and row.get("target")
-        ]
-        affected_processes = [
-            str(row["target"]) for row in rows
-            if row.get("relationship") == "IMPACTS_BUSINESS_PROCESS" and row.get("target")
-        ]
-        affected_steps = [
-            str(row["target"]) for row in rows
-            if row.get("relationship") == "IMPACTS_PROCESS_STEP" and row.get("target")
-        ]
-        affected_controls = [
-            str(row["target"]) for row in rows
-            if row.get("relationship") == "IMPLEMENTS_CONTROL" and row.get("target")
-        ]
-        parts = [f"If {source} fails, the graph shows a direct operational impact."]
-        if dependent_systems:
-            parts.append(f"Dependent systems affected: {_join_names(dependent_systems, 4)}.")
-        if affected_processes:
-            parts.append(f"Business processes affected: {_join_names(affected_processes, 4)}.")
-        if affected_steps:
-            parts.append(f"Impacted execution steps include {_join_names(affected_steps, 4)}.")
-        if affected_controls:
-            parts.append(f"Controls relying on this system include {_join_names(affected_controls, 3)}.")
-        return " ".join(parts)
+        source = _join_names(systems[:1]) or str(term or "The selected system")
+        affected = processes + steps + systems[1:]
+        return (
+            f"{source} has {len(rows)} visible downstream impact relationship(s)"
+            f"{' affecting ' + _join_names(affected, 5) if affected else ''}."
+        )
 
     if template in {"process_pipeline", "next_step"}:
         return (

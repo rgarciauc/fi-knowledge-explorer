@@ -49,7 +49,6 @@
         <GraphViewer
           :nodes="nodes"
           :edges="edges"
-          :presentation="presentation"
           :selected-key="selectedKey"
           :hovered-node-key="hoveredNodeKey"
           :hover-details="hoverDetails"
@@ -92,7 +91,6 @@ const {
   queryTrace,
   nodes,
   edges,
-  presentation,
   loading,
   selectedKey,
   selected,

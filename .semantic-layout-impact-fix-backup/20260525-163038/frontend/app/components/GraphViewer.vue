@@ -67,10 +67,7 @@
           <span v-if="layoutDirty" class="pending">Apply changes</span>
         </div>
 
-        <p v-if="layoutMode !== 'network'" class="structured-help">
-          This view uses a structured layout chosen for the question type.
-        </p>
-        <label v-if="layoutMode === 'network'">
+        <label>
           <span>
             Link distance <strong>{{ linkDistance }}</strong>
             <em title="Preferred spacing between nodes connected by a relationship.">?</em>
@@ -79,7 +76,7 @@
           <small>Spacing between connected nodes</small>
         </label>
 
-        <label v-if="layoutMode === 'network'">
+        <label>
           <span>
             Repulsion <strong>{{ Math.abs(chargeStrength) }}</strong>
             <em title="Repulsive force between all nodes. Higher values separate crowded nodes.">?</em>
@@ -88,7 +85,7 @@
           <small>Higher values spread crowded nodes</small>
         </label>
 
-        <div v-if="layoutMode === 'network'" class="control-actions layout-actions">
+        <div class="control-actions layout-actions">
           <button type="button" class="primary" @click="applyLayout">Apply layout</button>
           <button type="button" @click="resetLayout">Defaults</button>
         </div>
@@ -122,10 +119,7 @@
 
     <div class="network-canvas">
       <div class="canvas-header">
-        <div class="canvas-title">
-          <h2>Graph evidence</h2>
-          <span class="view-badge">{{ layoutLabel }}</span>
-        </div>
+        <h2>Graph evidence</h2>
         <span>Hover for context · Click for details</span>
       </div>
 
@@ -190,7 +184,6 @@ type GraphEdge = { source: string; target: string; label?: string }
 const props = defineProps<{
   nodes: Record<string, GraphNode>
   edges: Record<string, GraphEdge>
-  presentation?: { layout_mode?: string; root_key?: string | null } | null
   selectedKey?: string | null
   hoveredNodeKey?: string | null
   hoverDetails?: NodeDetails
@@ -218,16 +211,8 @@ const appliedChargeStrength = ref(chargeStrength.value)
 const enabledTypes = ref(new Set<string>())
 const tooltipPosition = ref({ left: "24px", top: "72px" })
 
-const layoutMode = computed(() => props.presentation?.layout_mode || "network")
-const layoutLabel = computed(() => ({
-  ordered_flow: "Ordered process flow",
-  radial_impact: "Impact blast radius",
-  network: "Relationship network",
-}[layoutMode.value] || "Relationship network"))
-
 const layoutDirty = computed(
-  () => layoutMode.value === "network"
-    && (linkDistance.value !== appliedLinkDistance.value || chargeStrength.value !== appliedChargeStrength.value),
+  () => linkDistance.value !== appliedLinkDistance.value || chargeStrength.value !== appliedChargeStrength.value,
 )
 
 function forceLayout() {
@@ -267,7 +252,7 @@ const configs = computed(() =>
       autoPanAndZoomOnLoad: autoFitEnabled.value ? "fit-content" : undefined,
       mouseWheelZoomEnabled: wheelZoomEnabled.value,
       doubleClickZoomEnabled: false,
-      layoutHandler: layoutMode.value === "network" ? forceLayout() : undefined,
+      layoutHandler: forceLayout(),
     },
     node: {
       selectable: true,
@@ -416,92 +401,6 @@ const tooltipStyle = computed(() => ({
   top: tooltipPosition.value.top,
 }))
 
-function connectedToStep(nodeKey: string): string | null {
-  for (const edge of Object.values(visibleEdges.value)) {
-    if (edge.source === nodeKey && visibleNodes.value[edge.target]?.type === "ProcessStep") return edge.target
-    if (edge.target === nodeKey && visibleNodes.value[edge.source]?.type === "ProcessStep") return edge.source
-  }
-  return null
-}
-
-function orderedFlowPositions(): Record<string, { x: number; y: number }> {
-  const positions: Record<string, { x: number; y: number }> = {}
-  const entries = Object.entries(visibleNodes.value)
-  const processEntry = entries.find(([, node]) => node.type === "BusinessProcess")
-  const steps = entries
-    .filter(([, node]) => node.type === "ProcessStep")
-    .sort(([, a], [, b]) => Number(a.order || 999) - Number(b.order || 999))
-
-  const baseX = 160
-  const stepGap = 220
-  const centerY = 350
-  if (processEntry) positions[processEntry[0]] = { x: 35, y: centerY }
-
-  steps.forEach(([key], index) => {
-    positions[key] = { x: baseX + index * stepGap, y: centerY }
-  })
-
-  const slotCounter: Record<string, number> = {}
-  for (const [key, node] of entries) {
-    if (positions[key]) continue
-    const stepKey = connectedToStep(key)
-    const stepPosition = stepKey ? positions[stepKey] : undefined
-    const slot = stepKey ? (slotCounter[`${stepKey}:${node.type}`] || 0) : 0
-    if (stepKey) slotCounter[`${stepKey}:${node.type}`] = slot + 1
-    const x = (stepPosition?.x || baseX) + slot * 70 - 30
-    const yByType: Record<string, number> = {
-      Team: 135,
-      Employee: 85,
-      Control: 545,
-      System: 655,
-      Dataset: 760,
-    }
-    positions[key] = { x, y: yByType[node.type] || 500 }
-  }
-  return positions
-}
-
-function radialImpactPositions(): Record<string, { x: number; y: number }> {
-  const positions: Record<string, { x: number; y: number }> = {}
-  const entries = Object.entries(visibleNodes.value)
-  const rootKey = props.presentation?.root_key
-    || entries.find(([, node]) => node.type === "System" && (node.degree || 0) === Math.max(...entries.map(([, n]) => n.degree || 0)))?.[0]
-    || entries[0]?.[0]
-  if (!rootKey) return positions
-
-  const center = { x: 560, y: 370 }
-  positions[rootKey] = center
-  const outer = entries.filter(([key]) => key !== rootKey)
-  const byLevel = new Map<number, string[]>()
-  for (const [key, node] of outer) {
-    const level = Number(node.level || 1)
-    const list = byLevel.get(level) || []
-    list.push(key)
-    byLevel.set(level, list)
-  }
-  for (const [level, keys] of byLevel.entries()) {
-    const radius = level === 1 ? 255 : 420
-    keys.forEach((key, index) => {
-      const angle = (-Math.PI / 2) + (2 * Math.PI * index / Math.max(keys.length, 1))
-      positions[key] = {
-        x: center.x + Math.cos(angle) * radius,
-        y: center.y + Math.sin(angle) * radius,
-      }
-    })
-  }
-  return positions
-}
-
-function applyStructuredPositions() {
-  if (layoutMode.value === "ordered_flow") {
-    layouts.value = { nodes: orderedFlowPositions() }
-  } else if (layoutMode.value === "radial_impact") {
-    layouts.value = { nodes: radialImpactPositions() }
-  } else {
-    layouts.value = { nodes: {} }
-  }
-}
-
 function toggleType(type: string) {
   const next = new Set(enabledTypes.value)
   if (next.has(type) && next.size > 1) next.delete(type)
@@ -527,9 +426,9 @@ function hover(nodeKey: string | null) {
 function applyLayout() {
   appliedLinkDistance.value = linkDistance.value
   appliedChargeStrength.value = chargeStrength.value
-  applyStructuredPositions()
+  layouts.value = { nodes: {} }
+  // A new graph instance recalculates stable coordinates, then fits content on load.
   layoutRevision.value += 1
-  nextTick(() => graph.value?.fitToContents())
 }
 
 function resetLayout() {
@@ -564,12 +463,7 @@ watch(
 )
 
 watch(
-  () => [
-    Object.keys(props.nodes).join("|"),
-    Object.keys(props.edges).join("|"),
-    props.presentation?.layout_mode,
-    props.presentation?.root_key,
-  ],
+  () => Object.keys(props.nodes).join("|") + Object.keys(props.edges).join("|"),
   () => nextTick(applyLayout),
   { immediate: true },
 )
@@ -642,10 +536,7 @@ const eventHandlers: vNG.EventHandlers = {
 .control-actions button.primary { background:#12324c; border-color:#38bdf8; color:#e6f7fe; }
 .network-canvas { position:relative; min-width:0; background:radial-gradient(circle at 48% 44%, rgba(34,211,238,.06), transparent 34%), #050d1b; }
 .canvas-header { position:absolute; z-index:2; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:baseline; height:55px; padding:16px 21px 0; pointer-events:none; }
-.canvas-title { display:flex; align-items:center; gap:11px; }
 .canvas-header h2 { color:#e8f2fd; font-size:1rem; margin:0; }
-.view-badge { padding:4px 9px; border:1px solid #1d3a56; border-radius:999px; background:#0c2034; color:#79d9f8 !important; font-size:.67rem !important; text-transform:uppercase; letter-spacing:.06em; }
-.structured-help { margin:8px 0 12px; padding:9px; border-radius:8px; background:#0c1b2d; color:#8fa5bf; font-size:.71rem; line-height:1.42; }
 .canvas-header span { color:#7891ae; font-size:.76rem; }
 .graph { height:735px; }
 .node-tooltip { position:absolute; z-index:5; pointer-events:none; width:min(330px, calc(100% - 32px)); padding:15px 16px; background:rgba(9,20,35,.96); border:1px solid #203a58; border-radius:13px; color:#e4edf8; box-shadow:0 18px 48px rgba(0,0,0,.42); }

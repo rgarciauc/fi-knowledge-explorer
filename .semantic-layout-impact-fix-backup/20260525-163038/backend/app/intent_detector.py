@@ -36,42 +36,12 @@ def _term_or_candidate(question: str, candidates: list[EntityCandidate], labels:
     candidate = next((c for c in candidates if c.label in labels), None)
     return candidate.name if candidate else (_extract_term_after(question, fallback_words) or "")
 
-
-def _explicit_system_in_question(question: str, candidates: list[EntityCandidate]) -> EntityCandidate | None:
-    """Prefer an explicitly named system over controls sharing a generic word such as Monitoring."""
-    q = normalize(question)
-    named_systems = [
-        candidate for candidate in candidates
-        if candidate.label == "System" and normalize(candidate.name) in q
-    ]
-    if named_systems:
-        named_systems.sort(key=lambda item: len(item.name), reverse=True)
-        return named_systems[0]
-    return next((candidate for candidate in candidates if candidate.label == "System"), None)
-
-
-def _is_impact_question(question: str) -> bool:
-    q = normalize(question)
-    return _has_similar_word(
-        q,
-        ("impact", "affected", "affect", "breaks", "fails", "failed", "failure", "outage", "unavailable", "down"),
-    )
-
 def _deterministic_decision(question: str, candidates: list[EntityCandidate]) -> IntentDecision | None:
     q = normalize(question)
-    system = _explicit_system_in_question(question, candidates)
+    system = next((c for c in candidates if c.label == "System"), None)
 
     if _has_similar_word(q, ("kpi", "kpis", "coverage", "metric", "metrics")):
         return IntentDecision(intent="kpis", confidence=0.98, reason="KPI or coverage wording detected.")
-
-    if _is_impact_question(question) and system:
-        return IntentDecision(
-            intent="system_impact",
-            term=system.name,
-            target_label="System",
-            confidence=0.99 if normalize(system.name) in q else max(0.90, system.score),
-            reason="Explicit system failure/impact question detected before broader payment or compliance routing.",
-        )
 
     if ("payment" in q and _has_similar_word(q, ("flow", "journey", "lifecycle", "route", "goes", "release", "settlement", "compliance"))) or "go no go" in q:
         return IntentDecision(intent="payment_flow", confidence=0.96, reason="End-to-end payment-flow wording detected.")
@@ -98,6 +68,9 @@ def _deterministic_decision(question: str, candidates: list[EntityCandidate]) ->
     if "input hub" in q or _has_similar_word(q, ("feed", "feeds", "pipeline", "lineage", "external")):
         term = _term_or_candidate(question, candidates, {"System","Dataset","DataPipeline","ExternalSource"}, ("system", "dataset", "pipeline"))
         return IntentDecision(intent="data_lineage", term=term or "Input Hub", confidence=0.91, reason="Data lineage or Input Hub wording detected.")
+
+    if _has_similar_word(q, ("impact", "affected", "affect", "breaks", "fails", "failed", "failure", "outage", "unavailable", "down")) and system:
+        return IntentDecision(intent="system_impact", term=system.name, target_label="System", confidence=max(0.86, system.score), reason="Failure/impact wording and system entity detected.")
 
     if "missing owner" in q or "owner gap" in q or _has_similar_word(q, ("unowned",)):
         return IntentDecision(intent="missing_owners", confidence=0.97, reason="Missing ownership wording detected.")
